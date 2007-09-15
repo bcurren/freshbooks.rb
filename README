@@ -1,0 +1,48 @@
+=Freshbooks API for Ruby
+
+Freshbooks is a popular web-based invoicing application for small and medium businesses. This library makes it easy to write Ruby code that communicates with your Freshbooks account using their public XML-based API.
+
+  http://www.freshbooks.com - FreshBooks Home
+
+=Installation
+
+This library is distributed as a single file: freshbooks.rb. Put it wherever you keep your other library files. For Rails applications, this would be /lib.
+
+  require 'lib/freshbooks'
+
+For examples, read on.
+
+=Examples
+
+Before doing anything, you need to initialize a base Freshbooks object with your account details.
+
+  account = Freshbooks.new('YourCompany', 'username', 'password')
+
+To add a new client, instantiate a new Freshbooks::Client object and send it to Freshbooks#add_client.
+
+  client = Freshbooks::Client.new
+
+  client.first_name    = 'Donna'
+  client.last_name     = 'Changstein'
+  client.username      = 'dchangstein'
+  client.email_address = 'dchangstein@xyz.com'
+  client.orgname       = 'XYZ Corp'
+
+  account.add_client(client)
+
+Basically, client attributes are the same as specified in the API, except that where the API uses CamelCase, I've inserted underscores in an attempt to stick with Ruby coding conventions.
+
+Modifying client details is just as easy. Just make sure the username is identical, and you're golden.
+
+  client.last_name = 'Chang'
+
+  account.modify_client(client)
+
+More examples on their way.
+
+=License
+
+The Freshbooks API for Ruby is distributed under the MIT License.
+
+(c) 2007 Ben Vinegar
+
