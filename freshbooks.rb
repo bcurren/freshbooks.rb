@@ -33,6 +33,10 @@ include REXML
 module FreshBooks
   API_PATH = "/api/xml-in"
 
+  class InternalError < Exception; end;
+  class AuthenticationError < Exception; end;
+  class UnknownSystemError < Exception; end;
+
   @@account_url, @@auth_token = ''
   @@response = nil
 
@@ -62,9 +66,23 @@ module FreshBooks
     end
 
     result = self.post(request.to_s)
-      
+
     @@response = Response.new(result)
 
+    #
+    # Failure
+    #
+    if @@response.fail?
+      error_msg = @@response.error_msg
+
+      # Raise an exception for unexpected errors
+
+      raise InternalError.new       if error_msg =~ /not formatted correctly/
+      raise AuthenticationError.new if error_msg =~ /[Aa]uthentication failed/
+      raise UnknownSystemError.new  if error_msg =~ /does not exist/
+    end
+
+    @@response
   end
 
   def self.post(body)
@@ -95,6 +113,14 @@ module FreshBooks
     def success?
       @doc.root.attributes['status'] == 'ok'
     end
+
+    def fail?
+      !success?
+    end
+
+    def error_msg
+      return @doc.root.elements['error'].text
+    end
   end
 
 
@@ -114,10 +140,10 @@ module FreshBooks
     # Anonymous methods for converting an XML element to its 
     # corresponding Ruby type
     MAPPING_FNS = {
-      Fixnum => lambda { |xml_val| xml_val.text.to_i },
-      Float => lambda { |xml_val| xml_val.text.to_f },
+      Fixnum     => lambda { |xml_val| xml_val.text.to_i },
+      Float      => lambda { |xml_val| xml_val.text.to_f },
       BaseObject => lambda { |xml_val| BaseObject.class::new_from_xml },
-      Array => lambda do |xml_val|
+      Array      => lambda do |xml_val|
         xml_val.elements.map do |elem|
           FreshBooks::const_get(elem.name.capitalize)::new_from_xml(elem)
         end
@@ -153,7 +179,7 @@ module FreshBooks
       self.members.each do |field_name|
 
         value = self.send(field_name)
-        #mapping = self::TYPE_MAPPINGS[field_name]
+
         if value.is_a?(Array)
           node = root.add_element(field_name)
           value.each { |array_elem| node.add_element(array_elem.to_xml) }
@@ -164,10 +190,6 @@ module FreshBooks
       root
     end
 
-    #def update_from_xml(root)
-    #  root.elements.each do |elem|
-    #  end
-    #end
   end
 
   #--------------------------------------------------------------------------
@@ -349,6 +371,7 @@ module FreshBooks
       resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
     end
   end
+
   #--------------------------------------------------------------------------
   # Payments
   #==========================================================================
@@ -383,6 +406,65 @@ module FreshBooks
 
       resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
     end  
+  end
+
+  #--------------------------------------------------------------------------
+  # Recurring Profiles
+  #==========================================================================
+
+  Recurring = BaseObject.new(:recurring_id, :client_id, :date, :po_number, 
+  :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
+  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes,
+  :occurrences, :frequency, :send_email, :send_snail_mail)
+
+
+  class Recurring
+    TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array, 
+      'po_number' => Fixnum, 'discount' => Float, 'amount' => Float,
+      'occurrences' => Fixnum }
+
+    def initialize
+      super
+      self.lines ||= []
+    end
+
+    def create
+      resp = FreshBooks::call_api('recurring.create', 'recurring' => self)
+      if resp.success?
+        self.invoice_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.invoice_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('recurring.update', 'recurring' => self)
+
+      resp.success?
+    end
+
+    def self.get(recurring_id)
+      resp = FreshBooks::call_api('recurring.get', 'recurring_id' => recurring_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def delete
+      Recurring::delete(self.recurring_id)
+    end
+
+    def self.delete(recurring_id)
+      resp = FreshBooks::call_api('recurring.delete', 'recurring_id' => recurring_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('recurring.list', options)
+
+      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
+    end
+
   end
 end
 
