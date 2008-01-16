@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
-# Freshbooks API - Ruby Library
+# FreshBooks.rb - Ruby interface to the FreshBooks API
 #
-# Copyright (c) 2007 Ben Vinegar (http://www.benlog.org)
+# Copyright (c) 2007-2008 Ben Vinegar (http://www.benlog.org)
 #
 # This work is distributed under an MIT License: 
 # http://www.opensource.org/licenses/mit-license.php
@@ -28,10 +28,13 @@
 
 require 'net/https'
 require 'rexml/document'
+
 include REXML
 
 module FreshBooks
-  API_PATH = "/api/xml-in"
+  VERSION = '2.1' # Only works with 2.1
+
+  SERVICE_URL = "/api/#{VERSION}/xml-in"
 
   class InternalError < Exception; end;
   class AuthenticationError < Exception; end;
@@ -90,7 +93,7 @@ module FreshBooks
     connection.use_ssl = true
     connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-    request = Net::HTTP::Post.new(FreshBooks::API_PATH)
+    request = Net::HTTP::Post.new(FreshBooks::SERVICE_URL)
     request.basic_auth @@auth_token, 'X' 
     request.body = body
     request.content_type = 'application/xml'
@@ -230,8 +233,11 @@ module FreshBooks
 
     def self.list(options = {})
       resp = FreshBooks::call_api('client.list', options)
+      
+      return nil unless resp.success?
 
-      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
+      client_elems = resp.elements[1].elements
+      client_elems.map { |elem| self.new_from_xml(elem) }
     end
 
     def self.delete(client_id)
@@ -298,8 +304,11 @@ module FreshBooks
 
     def self.list(options = {})
       resp = FreshBooks::call_api('invoice.list', options)
+      
+      return nil unless resp.success?
 
-      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
+      invoice_nodes = resp.elements[1].elements
+      invoice_nodes.map { |elem| self.new_from_xml(elem) }
     end
 
     def self.send_by_email(invoice_id)
@@ -367,8 +376,11 @@ module FreshBooks
 
     def self.list(options = {})
       resp = FreshBooks::call_api('item.list', options)
+      
+      return nil unless resp.success?
 
-      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
+      item_elems = resp.elements[1].elements
+      item_elems.map { |elem| self.new_from_xml(elem) }
     end
   end
 
@@ -404,8 +416,11 @@ module FreshBooks
     def self.list(options = {})
       resp = FreshBooks::call_api('payment.list', options)
 
-      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
-    end  
+      return nil unless resp.success?
+
+      payment_elems = resp.elements[1].elements
+      payment_elems.map { |elem| self.new_from_xml(elem) }
+    end
   end
 
   #--------------------------------------------------------------------------
@@ -462,7 +477,11 @@ module FreshBooks
     def self.list(options = {})
       resp = FreshBooks::call_api('recurring.list', options)
 
-      resp.success? ? resp.elements.map { |elem| self.new_from_xml(elem) } : nil
+      return nil unless resp.success?
+
+      recurring_elems = resp.elements[1].elements
+
+      recurring_elems.map { |elem| self.new_from_xml(elem) }
     end
 
   end
