@@ -32,7 +32,7 @@ require 'rexml/document'
 include REXML
 
 module FreshBooks
-  VERSION = '2.1' # Only works with 2.1
+  VERSION = '2.2' # Only works with 2.1
 
   SERVICE_URL = "/api/#{VERSION}/xml-in"
 
@@ -484,6 +484,157 @@ module FreshBooks
       recurring_elems.map { |elem| self.new_from_xml(elem) }
     end
 
+  end
+  
+  Project = BaseObject.new(:project_id, :client_id, :name, :bill_method, :rate, 
+  :description, :tasks)
+  
+  class Project
+    TYPE_MAPPINGS = { 'project_id' => Fixnum, 'client_id' => Fixnum,
+      'rate' => Float, 'tasks' => Array
+    }
+    
+    def initialize
+      super
+      self.tasks ||= []
+    end
+
+    def create
+      resp = FreshBooks::call_api('project.create', 'project' => self)
+      if resp.success?
+        self.project_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.project_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('project.update', 'project' => self)
+
+      resp.success?
+    end
+
+    def self.get(project_id)
+      resp = FreshBooks::call_api('project.get', 'project_id' => project_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def delete
+      Project::delete(self.project_id)
+    end
+
+    def self.delete(project_id)
+      resp = FreshBooks::call_api('project.delete', 'project_id' => project_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('project.list', options)
+
+      return nil unless resp.success?
+
+      project_elems = resp.elements[1].elements
+
+      project_elems.map { |elem| self.new_from_xml(elem) }
+    end
+  end
+  
+  Task = BaseObject.new(:task_id, :name, :billable, :rate, :description)
+  
+  class Task
+    TYPE_MAPPINGS = { 'task_id' => Fixnum, 'rate' => Float }
+    
+    def create
+      resp = FreshBooks::call_api('task.create', 'task' => self)
+      if resp.success?
+        self.task_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.task_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('task.update', 'task' => self)
+
+      resp.success?
+    end
+
+    def self.get(task_id)
+      resp = FreshBooks::call_api('task.get', 'task_id' => task_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def delete
+      Task::delete(self.task_id)
+    end
+
+    def self.delete(task_id)
+      resp = FreshBooks::call_api('task.delete', 'task_id' => task_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('task.list', options)
+
+      return nil unless resp.success?
+
+      task_elems = resp.elements[1].elements
+
+      task_elems.map { |elem| self.new_from_xml(elem) }
+    end
+  end
+  
+  TimeEntry = BaseObject.new(:time_entry_id, :project_id, :task_id, :hours, 
+  :notes, :date)
+  
+  class TimeEntry
+    TYPE_MAPPINGS = { 'time_entry_id' => Fixnum, 'project_id' => Fixnum, 
+      'task_id' => Fixnum, 'hours' => Float }
+    
+    def create
+      resp = FreshBooks::call_api('time_entry.create', 'time_entry' => self)
+      if resp.success?
+        self.time_entry_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.time_entry_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('time_entry.update', 'time_entry' => self)
+
+      resp.success?
+    end
+
+    def self.get(time_entry_id)
+      resp = FreshBooks::call_api('time_entry.get', 'time_entry_id' => time_entry_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def delete
+      TimeEntry::delete(self.time_entry_id)
+    end
+
+    def self.delete(time_entry_id)
+      resp = FreshBooks::call_api('time_entry.delete', 'time_entry_id' => time_entry_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('time_entry.list', options)
+
+      return nil unless resp.success?
+
+      time_entry_elems = resp.elements[1].elements
+
+      time_entry_elems.map { |elem| self.new_from_xml(elem) }
+    end
   end
 end
 
