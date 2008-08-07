@@ -1,48 +1,45 @@
-=Freshbooks API for Ruby
+= About
 
-Freshbooks is a popular web-based invoicing application for small and medium businesses. This library makes it easy to write Ruby code that communicates with your Freshbooks account using their public XML-based API.
+FreshBooks.rb is a Ruby interface to the FreshBooks API. It exposes easy-to-use classes and methods for interacting with your FreshBooks account.
 
-  http://www.freshbooks.com - FreshBooks Home
+= Examples
 
-=Installation
+Initialization:
 
-This library is distributed as a single file: freshbooks.rb. Put it wherever you keep your other library files. For Rails applications, this would be /lib.
+  FreshBooks.setup('sample.freshbooks.com', 'mytoken')
 
-  require 'lib/freshbooks'
+Updating a client name:
 
-For examples, read on.
+  clients = FreshBooks::Client.list
+  client = clients[0]
+  client.first_name = 'Suzy'
+  client.update
 
-=Examples
+Updating an invoice:
 
-Before doing anything, you need to initialize a base Freshbooks object with your account details.
+  invoice = FreshBooks::Invoice.get(4)
+  invoice.lines[0].quantity += 1
+  invoice.update
 
-  account = Freshbooks.new('YourCompany', 'username', 'password')
+Creating a new item
 
-To add a new client, instantiate a new Freshbooks::Client object and send it to Freshbooks#add_client.
+  item = FreshBooks::Item.new
+  item.name = 'A sample item'
+  item.create
 
-  client = Freshbooks::Client.new
+= License
 
-  client.first_name    = 'Donna'
-  client.last_name     = 'Changstein'
-  client.username      = 'dchangstein'
-  client.email_address = 'dchangstein@xyz.com'
-  client.orgname       = 'XYZ Corp'
+This work is distributed under the MIT License. Use/modify the code however you like.
 
-  account.add_client(client)
+= Download
 
-Basically, client attributes are the same as specified in the API, except that where the API uses CamelCase, I've inserted underscores in an attempt to stick with Ruby coding conventions.
+FreshBooks.rb is distributed as a gem via Rubyforge. The easiest way to install it is like so:
 
-Modifying client details is just as easy. Just make sure the username is identical, and you're golden.
+  gem install freshbooks
 
-  client.last_name = 'Chang'
+Alternatively, you can download it from the Rubyforge project page.
 
-  account.modify_client(client)
+= Credits
 
-More examples on their way.
-
-=License
-
-The Freshbooks API for Ruby is distributed under the MIT License.
-
-(c) 2007 Ben Vinegar
+FreshBooks.rb is written and maintained by Ben Vinegar, with contributions from Flinn Meuller, Kenneth Kalmer, and others. 
 
