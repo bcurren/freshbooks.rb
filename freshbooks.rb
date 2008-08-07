@@ -32,9 +32,10 @@ require 'rexml/document'
 include REXML
 
 module FreshBooks
-  VERSION = '2.2' # Only works with 2.1
+  VERSION = '2.2.1'     # Gem version
+  API_VERSION = '2.1' # FreshBooks API version
 
-  SERVICE_URL = "/api/#{VERSION}/xml-in"
+  SERVICE_URL = "/api/#{API_VERSION}/xml-in"
 
   class InternalError < Exception; end;
   class AuthenticationError < Exception; end;
