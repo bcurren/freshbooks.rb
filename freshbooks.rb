@@ -408,7 +408,7 @@ module FreshBooks
       resp.success?
     end
 
-    def self.get(payment)
+    def self.get(payment_id)
       resp = FreshBooks::call_api('payment.get', 'payment_id' => payment_id)
 
       resp.success? ? self.new_from_xml(resp.elements[1]) : nil
