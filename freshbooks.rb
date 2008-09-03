@@ -40,6 +40,8 @@ module FreshBooks
   class InternalError < Exception; end;
   class AuthenticationError < Exception; end;
   class UnknownSystemError < Exception; end;
+  class InvalidParameterError < Exception; end;
+
 
   @@account_url, @@auth_token = ''
   @@response = nil
@@ -79,11 +81,13 @@ module FreshBooks
     if @@response.fail?
       error_msg = @@response.error_msg
 
-      # Raise an exception for unexpected errors
+      raise InternalError.new,         error_msg if error_msg =~ /not formatted correctly/
+      raise AuthenticationError.new,   error_msg if error_msg =~ /[Aa]uthentication failed/
+      raise UnknownSystemError.new,    error_msg if error_msg =~ /does not exist/
+      raise InvalidParameterError.new, error_msg if error_msg =~ /Invalid parameter: (.*)/
 
-      raise InternalError.new       if error_msg =~ /not formatted correctly/
-      raise AuthenticationError.new if error_msg =~ /[Aa]uthentication failed/
-      raise UnknownSystemError.new  if error_msg =~ /does not exist/
+      # Raise an exception for unexpected errors
+      raise error_msg
     end
 
     @@response
