@@ -145,6 +145,9 @@ module FreshBooks
     # Maps field names ('invoice_id') to Ruby types (Fixnum)
     TYPE_MAPPINGS = {}
 
+    # Maps field names ('url') to mutability (nil for mutable; :read_only for read-only)
+    MUTABILITY = {}
+
     # Anonymous methods for converting an XML element to its
     # corresponding Ruby type
     MAPPING_FNS = {
@@ -185,6 +188,7 @@ module FreshBooks
 
       # Add each BaseObject member to the root elem
       self.members.each do |field_name|
+        next if self.class::MUTABILITY[field_name.to_sym] == :read_only
 
         value = self.send(field_name)
 
@@ -267,12 +271,14 @@ module FreshBooks
 
   Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes)
+  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url)
 
 
   class Invoice
     TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
     'po_number' => Fixnum, 'discount' => Float, 'amount' => Float }
+
+    MUTABILITY = { :url => :read_only }
 
     def initialize
       super
