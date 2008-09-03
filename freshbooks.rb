@@ -258,7 +258,7 @@ module FreshBooks
   # Invoices
   #==========================================================================
 
-  Invoice = BaseObject.new(:invoice_id, :client_id, :date, :po_number, 
+  Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number, 
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
   :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes)
 
