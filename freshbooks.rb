@@ -43,10 +43,12 @@ module FreshBooks
 
   @@account_url, @@auth_token = ''
   @@response = nil
+  @@request_headers = nil
 
-  def self.setup(account_url, auth_token)
+  def self.setup(account_url, auth_token, request_headers = {})
     @@account_url = account_url
     @@auth_token = auth_token
+    @@request_headers = request_headers
 
     true
   end
@@ -98,6 +100,9 @@ module FreshBooks
     request.basic_auth @@auth_token, 'X' 
     request.body = body
     request.content_type = 'application/xml'
+    @@request_headers.each_pair do |name, value|
+      request[name.to_s] = value
+    end
 
     result = connection.start  { |http| http.request(request) }
 
