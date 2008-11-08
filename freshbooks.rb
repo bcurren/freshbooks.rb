@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2007-2008 Ben Vinegar (http://www.benlog.org)
 #
-# This work is distributed under an MIT License: 
+# This work is distributed under an MIT License:
 # http://www.opensource.org/licenses/mit-license.php
 #
 #------------------------------------------------------------------------------
@@ -40,13 +40,17 @@ module FreshBooks
   class InternalError < Exception; end;
   class AuthenticationError < Exception; end;
   class UnknownSystemError < Exception; end;
+  class InvalidParameterError < Exception; end;
+
 
   @@account_url, @@auth_token = ''
   @@response = nil
-  
-  def self.setup(account_url, auth_token)
+  @@request_headers = nil
+
+  def self.setup(account_url, auth_token, request_headers = {})
     @@account_url = account_url
     @@auth_token = auth_token
+    @@request_headers = request_headers
 
     true
   end
@@ -79,11 +83,13 @@ module FreshBooks
     if @@response.fail?
       error_msg = @@response.error_msg
 
-      # Raise an exception for unexpected errors
+      raise InternalError.new,         error_msg if error_msg =~ /not formatted correctly/
+      raise AuthenticationError.new,   error_msg if error_msg =~ /[Aa]uthentication failed/
+      raise UnknownSystemError.new,    error_msg if error_msg =~ /does not exist/
+      raise InvalidParameterError.new, error_msg if error_msg =~ /Invalid parameter: (.*)/
 
-      raise InternalError.new       if error_msg =~ /not formatted correctly/
-      raise AuthenticationError.new if error_msg =~ /[Aa]uthentication failed/
-      raise UnknownSystemError.new  if error_msg =~ /does not exist/
+      # Raise an exception for unexpected errors
+      raise error_msg
     end
 
     @@response
@@ -95,9 +101,12 @@ module FreshBooks
     connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     request = Net::HTTP::Post.new(FreshBooks::SERVICE_URL)
-    request.basic_auth @@auth_token, 'X' 
+    request.basic_auth @@auth_token, 'X'
     request.body = body
     request.content_type = 'application/xml'
+    @@request_headers.each_pair do |name, value|
+      request[name.to_s] = value
+    end
 
     result = connection.start  { |http| http.request(request) }
 
@@ -141,7 +150,10 @@ module FreshBooks
     # Maps field names ('invoice_id') to Ruby types (Fixnum)
     TYPE_MAPPINGS = {}
 
-    # Anonymous methods for converting an XML element to its 
+    # Maps field names ('url') to mutability (nil for mutable; :read_only for read-only)
+    MUTABILITY = {}
+
+    # Anonymous methods for converting an XML element to its
     # corresponding Ruby type
     MAPPING_FNS = {
       Fixnum     => lambda { |xml_val| xml_val.text.to_i },
@@ -174,19 +186,23 @@ module FreshBooks
     end
 
     # Convert an instance of this class to an XML element
-    def to_xml
+    def to_xml(elem_name = nil)
       # The root element is the class name, downcased
-      elem_name = self.class.to_s.split('::').last.downcase
+      elem_name ||= self.class.to_s.split('::').last.downcase
       root = Element.new elem_name
 
       # Add each BaseObject member to the root elem
       self.members.each do |field_name|
+        next if self.class::MUTABILITY[field_name.to_sym] == :read_only
 
         value = self.send(field_name)
 
         if value.is_a?(Array)
           node = root.add_element(field_name)
-          value.each { |array_elem| node.add_element(array_elem.to_xml) }
+          value.each { |array_elem|
+            array_elem_name = 'line' if field_name == 'lines'
+            node.add_element(array_elem.to_xml(array_elem_name))
+          }
         elsif !value.nil?
           root.add_element(field_name).text = value
         end
@@ -258,14 +274,16 @@ module FreshBooks
   # Invoices
   #==========================================================================
 
-  Invoice = BaseObject.new(:invoice_id, :client_id, :date, :po_number, 
+  Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes)
+  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url)
 
 
   class Invoice
-    TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array, 
+    TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
     'po_number' => Fixnum, 'discount' => Float, 'amount' => Float }
+
+    MUTABILITY = { :url => :read_only }
 
     def initialize
       super
@@ -330,7 +348,7 @@ module FreshBooks
     :tax2_name, :tax1_percent, :tax2_percent, :amount)
 
   class Line
-    TYPE_MAPPINGS = { 'unit_cost' => Float, 'quantity' => Fixnum, 
+    TYPE_MAPPINGS = { 'unit_cost' => Float, 'quantity' => Fixnum,
       'tax1_percent' => Float, 'tax2_percent' => Float, 'amount' => Float }
   end
 
@@ -338,10 +356,10 @@ module FreshBooks
   # Items
   #==========================================================================
 
-  Item = BaseObject.new(:item_id, :name, :description, :unit_cost, 
+  Item = BaseObject.new(:item_id, :name, :description, :unit_cost,
     :quantity, :inventory)
   class Item
-    TYPE_MAPPINGS = { 'item_id' => Fixnum, 'unit_cost' => Float, 
+    TYPE_MAPPINGS = { 'item_id' => Fixnum, 'unit_cost' => Float,
       'quantity' => Fixnum, 'inventory' => Fixnum }
 
     def create
@@ -428,14 +446,14 @@ module FreshBooks
   # Recurring Profiles
   #==========================================================================
 
-  Recurring = BaseObject.new(:recurring_id, :client_id, :date, :po_number, 
+  Recurring = BaseObject.new(:recurring_id, :client_id, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
   :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes,
   :occurrences, :frequency, :send_email, :send_snail_mail)
 
 
   class Recurring
-    TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array, 
+    TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
       'po_number' => Fixnum, 'discount' => Float, 'amount' => Float,
       'occurrences' => Fixnum }
 
@@ -487,7 +505,7 @@ module FreshBooks
 
   end
   
-  Project = BaseObject.new(:project_id, :client_id, :name, :bill_method, :rate, 
+  Project = BaseObject.new(:project_id, :client_id, :name, :bill_method, :rate,
   :description, :tasks)
   
   class Project
@@ -589,11 +607,11 @@ module FreshBooks
     end
   end
   
-  TimeEntry = BaseObject.new(:time_entry_id, :project_id, :task_id, :hours, 
+  TimeEntry = BaseObject.new(:time_entry_id, :project_id, :task_id, :hours,
   :notes, :date)
   
   class TimeEntry
-    TYPE_MAPPINGS = { 'time_entry_id' => Fixnum, 'project_id' => Fixnum, 
+    TYPE_MAPPINGS = { 'time_entry_id' => Fixnum, 'project_id' => Fixnum,
       'task_id' => Fixnum, 'hours' => Float }
     
     def create
