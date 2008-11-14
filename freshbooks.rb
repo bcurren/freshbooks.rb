@@ -41,6 +41,8 @@ module FreshBooks
   class AuthenticationError < Exception; end;
   class UnknownSystemError < Exception; end;
   class InvalidParameterError < Exception; end;
+  class ApiAccessNotEnabled < Exception; end;
+  class InvalidAccountUrl < Exception; end;
 
 
   @@account_url, @@auth_token = ''
@@ -48,6 +50,8 @@ module FreshBooks
   @@request_headers = nil
 
   def self.setup(account_url, auth_token, request_headers = {})
+    raise InvalidAccountUrl.new unless account_url =~ /^[0-9a-zA-Z\-_]+\.freshbooks\.com$/
+    
     @@account_url = account_url
     @@auth_token = auth_token
     @@request_headers = request_headers
@@ -87,7 +91,8 @@ module FreshBooks
       raise AuthenticationError.new,   error_msg if error_msg =~ /[Aa]uthentication failed/
       raise UnknownSystemError.new,    error_msg if error_msg =~ /does not exist/
       raise InvalidParameterError.new, error_msg if error_msg =~ /Invalid parameter: (.*)/
-
+      raise ApiAccessNotEnabled.new, error_msg if error_msg =~ /API access for this account is not enabled/
+      
       # Raise an exception for unexpected errors
       raise error_msg
     end
@@ -107,7 +112,7 @@ module FreshBooks
     @@request_headers.each_pair do |name, value|
       request[name.to_s] = value
     end
-
+    
     result = connection.start  { |http| http.request(request) }
 
     result.body
@@ -219,7 +224,7 @@ module FreshBooks
   Client = BaseObject.new(:client_id, :first_name, :last_name, :organization,
     :email, :username, :password, :work_phone, :home_phone, :mobile, :fax,
     :notes, :p_street1, :p_street2, :p_city, :p_state, :p_country, :p_code,
-    :s_street1, :s_street2, :s_city, :s_state, :s_country, :s_code, :url)
+    :s_street1, :s_street2, :s_city, :s_state, :s_country, :s_code, :url, :auth_url)
 
   class Client
     TYPE_MAPPINGS = { 'client_id' => Fixnum }
@@ -276,14 +281,17 @@ module FreshBooks
 
   Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url)
+  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url, :auth_url)
 
 
   class Invoice
     TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
     'po_number' => Fixnum, 'discount' => Float, 'amount' => Float }
 
-    MUTABILITY = { :url => :read_only }
+    MUTABILITY = { 
+      :url => :read_only,
+      :auth_url => :read_only 
+    }
 
     def initialize
       super
