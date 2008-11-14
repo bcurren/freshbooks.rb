@@ -114,6 +114,11 @@ module FreshBooks
     end
     
     result = connection.start  { |http| http.request(request) }
+    
+    puts "Request:"
+    puts body
+    puts "Response:"
+    puts result.body
 
     result.body
   end
@@ -726,6 +731,74 @@ module FreshBooks
       resp.success?
     end
   end    
+  
+  #--------------------------------------------------------------------------
+  # Expenses
+  #==========================================================================
 
+  Expense = BaseObject.new(:expense_id, :category_id, :project_id, :client_id, :staff_id,
+    :amount, :date, :notes, :status, :tax1_name, :tax1_percent, :tax1_amount,
+    :tax2_name, :tax2_percent, :tax2_amount)
+  
+  class Expense
+    TYPE_MAPPINGS = {
+      'category_id' => Fixnum, 
+      'project_id' => Fixnum,
+      'client_id' => Fixnum,
+      'staff_id' => Fixnum,
+      'amount' => Float,
+      'tax1_amount' => Float,
+      'tax1_percent' => Float,
+      'tax2_amount' => Float,
+      'tax2_percent' => Float
+    }
+
+    MUTABILITY = {
+    }
+    
+    def self.get(expense_id)
+      resp = FreshBooks::call_api('expense.get', 'expense_id' => expense_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def self.delete(expense_id)
+      resp = FreshBooks::call_api('expense.delete', 'expense_id' => expense_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('expense.list', options)
+      
+      return nil unless resp.success?
+
+      invoice_nodes = resp.elements[1].elements
+      invoice_nodes.map { |elem| self.new_from_xml(elem) }
+    end
+
+    def initialize
+      super
+    end
+
+    def create
+      resp = FreshBooks::call_api('expense.create', 'expense' => self)
+      if resp.success?
+        self.expense_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.expense_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('expense.update', 'expense' => self)
+
+      resp.success?
+    end
+
+    def delete
+      Expense::delete(self.expense_id)
+    end
+  end
 end
 
