@@ -28,6 +28,7 @@
 
 require 'net/https'
 require 'rexml/document'
+require 'logger'
 
 include REXML
 
@@ -45,6 +46,17 @@ module FreshBooks
   class InvalidAccountUrl < Exception; end;
 
 
+
+  @@logger = Logger.new(STDOUT)
+  def self.logger
+    @@logger
+  end
+  
+  def self.log_level=(level)
+    @@logger.level = level
+  end
+  self.log_level = Logger::WARN
+  
   @@account_url, @@auth_token = ''
   @@response = nil
   @@request_headers = nil
@@ -115,10 +127,12 @@ module FreshBooks
     
     result = connection.start  { |http| http.request(request) }
     
-    puts "Request:"
-    puts body
-    puts "Response:"
-    puts result.body
+    if logger.debug?
+      logger.debug "Request:"
+      logger.debug body
+      logger.debug "Response:"
+      logger.debug result.body
+    end
 
     result.body
   end
