@@ -45,8 +45,6 @@ module FreshBooks
   class ApiAccessNotEnabled < Exception; end;
   class InvalidAccountUrl < Exception; end;
 
-
-
   @@logger = Logger.new(STDOUT)
   def self.logger
     @@logger
@@ -814,5 +812,62 @@ module FreshBooks
       Expense::delete(self.expense_id)
     end
   end
-end
+  
+  #--------------------------------------------------------------------------
+  # Staff
+  #==========================================================================
 
+  Staff = BaseObject.new(:staff_id, :username, :first_name, :last_name, :email)
+  
+  class Staff
+    TYPE_MAPPINGS = {
+    }
+
+    MUTABILITY = {
+    }
+    
+    def self.get(staff_id)
+      resp = FreshBooks::call_api('staff.get', 'expense_id' => staff_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def self.delete(staff_id)
+      resp = FreshBooks::call_api('staff.delete', 'expense_id' => staff_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('staff.list', options)
+      
+      return nil unless resp.success?
+
+      invoice_nodes = resp.elements[1].elements
+      invoice_nodes.map { |elem| self.new_from_xml(elem) }
+    end
+
+    def initialize
+      super
+    end
+
+    def create
+      resp = FreshBooks::call_api('staff.create', 'staff' => self)
+      if resp.success?
+        self.staff_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.expense_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('staff.update', 'staff' => self)
+
+      resp.success?
+    end
+
+    def delete
+      Expense::delete(self.expense_id)
+    end
+  end
+end
