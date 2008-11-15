@@ -232,6 +232,17 @@ module FreshBooks
       root
     end
 
+    def self.build_list_with_pagination(response)
+      root = response.elements[1]
+      objects = root.elements
+      objects = objects.map { |object| self.new_from_xml(object) }
+      
+      page = root.attributes["page"]
+      per_page = root.attributes["per_page"]
+      total = root.attributes["total"]
+      
+      ListProxy.new(objects, page, per_page, total)
+    end
   end
 
   #--------------------------------------------------------------------------
@@ -274,9 +285,7 @@ module FreshBooks
       resp = FreshBooks::call_api('client.list', options)
       
       return nil unless resp.success?
-
-      client_elems = resp.elements[1].elements
-      client_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
     def self.delete(client_id)
@@ -291,6 +300,8 @@ module FreshBooks
       Invoice::list(options)
     end
   end
+  
+  
 
   #--------------------------------------------------------------------------
   # Invoices
@@ -350,9 +361,7 @@ module FreshBooks
       resp = FreshBooks::call_api('invoice.list', options)
       
       return nil unless resp.success?
-
-      invoice_nodes = resp.elements[1].elements
-      invoice_nodes.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
     def self.send_by_email(invoice_id)
@@ -422,9 +431,7 @@ module FreshBooks
       resp = FreshBooks::call_api('item.list', options)
       
       return nil unless resp.success?
-
-      item_elems = resp.elements[1].elements
-      item_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
   end
 
@@ -461,9 +468,7 @@ module FreshBooks
       resp = FreshBooks::call_api('payment.list', options)
 
       return nil unless resp.success?
-
-      payment_elems = resp.elements[1].elements
-      payment_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
   end
 
@@ -522,10 +527,7 @@ module FreshBooks
       resp = FreshBooks::call_api('recurring.list', options)
 
       return nil unless resp.success?
-
-      recurring_elems = resp.elements[1].elements
-
-      recurring_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
   end
@@ -578,10 +580,7 @@ module FreshBooks
       resp = FreshBooks::call_api('project.list', options)
 
       return nil unless resp.success?
-
-      project_elems = resp.elements[1].elements
-
-      project_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
   end
   
@@ -625,10 +624,7 @@ module FreshBooks
       resp = FreshBooks::call_api('task.list', options)
 
       return nil unless resp.success?
-
-      task_elems = resp.elements[1].elements
-
-      task_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
   end
   
@@ -674,10 +670,7 @@ module FreshBooks
       resp = FreshBooks::call_api('time_entry.list', options)
 
       return nil unless resp.success?
-
-      time_entry_elems = resp.elements[1].elements
-
-      time_entry_elems.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
   end
   
@@ -731,10 +724,9 @@ module FreshBooks
 
     def self.list(options = {})
       resp = FreshBooks::call_api('estimate.list', options)
+      
       return nil unless resp.success?
-
-      estimate_nodes = resp.elements[1].elements
-      estimate_nodes.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
     def self.send_by_email(estimate_id)
@@ -784,9 +776,7 @@ module FreshBooks
       resp = FreshBooks::call_api('expense.list', options)
       
       return nil unless resp.success?
-
-      invoice_nodes = resp.elements[1].elements
-      invoice_nodes.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
     def initialize
@@ -842,9 +832,7 @@ module FreshBooks
       resp = FreshBooks::call_api('staff.list', options)
       
       return nil unless resp.success?
-
-      invoice_nodes = resp.elements[1].elements
-      invoice_nodes.map { |elem| self.new_from_xml(elem) }
+      self.build_list_with_pagination(resp)
     end
 
     def initialize
@@ -868,6 +856,20 @@ module FreshBooks
 
     def delete
       Expense::delete(self.expense_id)
+    end
+  end
+  
+  class ListProxy
+    attr_reader :page, :per_page, :total
+    def initialize(array, page, per_page, total)
+      @array = array
+      @page = page
+      @per_page = per_page
+      @total = total
+    end
+    
+    def method_missing(method, *args)
+      @array.send(method, *args)
     end
   end
 end
