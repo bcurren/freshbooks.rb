@@ -38,12 +38,13 @@ module FreshBooks
 
   SERVICE_URL = "/api/#{API_VERSION}/xml-in"
 
-  class InternalError < Exception; end;
-  class AuthenticationError < Exception; end;
-  class UnknownSystemError < Exception; end;
-  class InvalidParameterError < Exception; end;
-  class ApiAccessNotEnabled < Exception; end;
-  class InvalidAccountUrl < Exception; end;
+  class Error < StandardError; end;
+  class InternalError < Error; end;
+  class AuthenticationError < Error; end;
+  class UnknownSystemError < Error; end;
+  class InvalidParameterError < Error; end;
+  class ApiAccessNotEnabled < Error; end;
+  class InvalidAccountUrl < Error; end;
 
   @@logger = Logger.new(STDOUT)
   def self.logger
@@ -97,11 +98,11 @@ module FreshBooks
     if @@response.fail?
       error_msg = @@response.error_msg
 
-      raise InternalError.new,         error_msg if error_msg =~ /not formatted correctly/
-      raise AuthenticationError.new,   error_msg if error_msg =~ /[Aa]uthentication failed/
-      raise UnknownSystemError.new,    error_msg if error_msg =~ /does not exist/
-      raise InvalidParameterError.new, error_msg if error_msg =~ /Invalid parameter: (.*)/
-      raise ApiAccessNotEnabled.new, error_msg if error_msg =~ /API access for this account is not enabled/
+      raise InternalError.new(error_msg) if error_msg =~ /not formatted correctly/
+      raise AuthenticationError.new(error_msg) if error_msg =~ /[Aa]uthentication failed/
+      raise UnknownSystemError.new(error_msg) if error_msg =~ /does not exist/
+      raise InvalidParameterError.new(error_msg) if error_msg =~ /Invalid parameter: (.*)/
+      raise ApiAccessNotEnabled.new(error_msg) if error_msg =~ /API access for this account is not enabled/
       
       # Raise an exception for unexpected errors
       raise error_msg
