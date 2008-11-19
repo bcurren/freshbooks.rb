@@ -125,6 +125,17 @@ module FreshBooks
     end
     
     result = connection.start  { |http| http.request(request) }
+    case result
+      when Net::HTTPSuccess
+        # Good, just continue
+      when Net::HTTPRedirection
+        # FreshBooks is returning 302 when account_url is valid but an account with the given 
+        # name doesn't exist. Translate to an unknown system error. Open question on forums
+        # to figure out why this is happening. http://forum.freshbooks.com/viewtopic.php?pid=14170#p14170
+        raise UnknownSystemError.new("HTTP redirection")
+      else
+        raise InternalError.new("HTTP request failed. Internal error with FreshBooks API")
+    end
     
     if logger.debug?
       logger.debug "Request:"
@@ -874,3 +885,4 @@ module FreshBooks
     end
   end
 end
+
