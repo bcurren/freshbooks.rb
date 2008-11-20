@@ -140,6 +140,10 @@ module FreshBooks
         else
           raise InternalError.new("Invalid http code: #{result.class}")
         end
+      when Net::HTTPUnauthorized
+        raise AuthenticationError.new("Invalid API key.")
+      when Net::HTTPBadRequest
+        raise ApiAccessNotEnabledError.new("API not enabled.")
       else
         raise InternalError.new("Invalid http code: #{result.class}")
     end
