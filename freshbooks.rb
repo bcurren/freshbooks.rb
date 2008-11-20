@@ -891,8 +891,8 @@ module FreshBooks
       @total = total
     end
     
-    def method_missing(method, *args)
-      @array.send(method, *args)
+    def method_missing(method, *args, &block)
+      @array.send(method, *args, &block)
     end
   end
 end
