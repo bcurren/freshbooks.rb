@@ -43,8 +43,9 @@ module FreshBooks
   class AuthenticationError < Error; end;
   class UnknownSystemError < Error; end;
   class InvalidParameterError < Error; end;
-  class ApiAccessNotEnabled < Error; end;
-  class InvalidAccountUrl < Error; end;
+  class ApiAccessNotEnabledError < Error; end;
+  class InvalidAccountUrlError < Error; end;
+  class AccountDeactivatedError < Error; end;
 
   @@logger = Logger.new(STDOUT)
   def self.logger
@@ -61,7 +62,7 @@ module FreshBooks
   @@request_headers = nil
 
   def self.setup(account_url, auth_token, request_headers = {})
-    raise InvalidAccountUrl.new unless account_url =~ /^[0-9a-zA-Z\-_]+\.freshbooks\.com$/
+    raise InvalidAccountUrlError.new unless account_url =~ /^[0-9a-zA-Z\-_]+\.freshbooks\.com$/
     
     @@account_url = account_url
     @@auth_token = auth_token
@@ -102,7 +103,7 @@ module FreshBooks
       raise AuthenticationError.new(error_msg) if error_msg =~ /[Aa]uthentication failed/
       raise UnknownSystemError.new(error_msg) if error_msg =~ /does not exist/
       raise InvalidParameterError.new(error_msg) if error_msg =~ /Invalid parameter: (.*)/
-      raise ApiAccessNotEnabled.new(error_msg) if error_msg =~ /API access for this account is not enabled/
+      raise ApiAccessNotEnabledError.new(error_msg) if error_msg =~ /API access for this account is not enabled/
       
       # Raise an exception for unexpected errors
       raise error_msg
@@ -132,9 +133,15 @@ module FreshBooks
         # FreshBooks is returning 302 when account_url is valid but an account with the given 
         # name doesn't exist. Translate to an unknown system error. Open question on forums
         # to figure out why this is happening. http://forum.freshbooks.com/viewtopic.php?pid=14170#p14170
-        raise UnknownSystemError.new("HTTP redirection")
+        if result["location"] =~ /loginSearch/
+          raise UnknownSystemError.new("Account does not exist")
+        elsif result["location"] =~ /deactivated/
+          raise AccountDeactivatedError.new("Account is deactived")
+        else
+          raise InternalError.new("Invalid http code: #{result.class}")
+        end
       else
-        raise InternalError.new("HTTP request failed. Internal error with FreshBooks API")
+        raise InternalError.new("Invalid http code: #{result.class}")
     end
     
     if logger.debug?
