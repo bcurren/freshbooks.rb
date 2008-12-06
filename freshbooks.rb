@@ -684,7 +684,7 @@ module FreshBooks
     end
 
     def update
-      resp = FreshBooks::call_api('invoice.update', 'estimate' => self)
+      resp = FreshBooks::call_api('estimate.update', 'estimate' => self)
 
       resp.success?
     end
