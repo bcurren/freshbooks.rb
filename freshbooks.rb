@@ -159,9 +159,13 @@ module FreshBooks
       Fixnum     => lambda { |xml_val| xml_val.text.to_i },
       Float      => lambda { |xml_val| xml_val.text.to_f },
       BaseObject => lambda { |xml_val| BaseObject.class::new_from_xml },
-      Array      => lambda do |xml_val|
-        xml_val.elements.map do |elem|
-          FreshBooks::const_get(elem.name.capitalize)::new_from_xml(elem)
+      Array => lambda do |xml_val|
+        if xml_val.elements[1].name == 'client_view'
+          FreshBooks::Links::new_from_xml(xml_val)
+        else
+          xml_val.elements.map do |elem|
+             FreshBooks::const_get(elem.name.capitalize)::new_from_xml(elem)
+          end
         end
       end
     }
@@ -274,9 +278,9 @@ module FreshBooks
   # Invoices
   #==========================================================================
 
-  Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
+  Invoice = BaseObject.new(:invoice_id, :client_id, :number, :amount_outstanding, :links, :recurring_id, :date, :po_number, 
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url)
+  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes)
 
 
   class Invoice
@@ -288,6 +292,7 @@ module FreshBooks
     def initialize
       super
       self.lines ||= []
+      self.links ||= []
     end
 
     def create
@@ -350,6 +355,12 @@ module FreshBooks
   class Line
     TYPE_MAPPINGS = { 'unit_cost' => Float, 'quantity' => Fixnum,
       'tax1_percent' => Float, 'tax2_percent' => Float, 'amount' => Float }
+  end
+  
+  Links = BaseObject.new(:client_view, :view, :edit)
+  
+  class Links
+    TYPE_MAPPINGS = { 'client_view' => String, 'view' => String, 'edit' => String }
   end
 
   #--------------------------------------------------------------------------
