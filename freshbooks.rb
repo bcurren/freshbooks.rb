@@ -276,12 +276,14 @@ module FreshBooks
 
   Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url)
+  :p_state, :p_country, :p_code, :amount, :amount_oustanding, :paid,
+  :lines, :discount, :status, :notes, :url)
 
 
   class Invoice
     TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
-    'po_number' => Fixnum, 'discount' => Float, 'amount' => Float }
+    'po_number' => Fixnum, 'discount' => Float, 'amount' => Float,
+    'amount_outstanding' => Float, 'paid' => Float }
 
     MUTABILITY = { :url => :read_only }
 
