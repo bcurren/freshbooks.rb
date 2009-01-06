@@ -223,6 +223,7 @@ module FreshBooks
 
   class Client
     TYPE_MAPPINGS = { 'client_id' => Fixnum }
+    MUTABILITY = { :url => :read_only }
     def create
       resp = FreshBooks::call_api('client.create', 'client' => self)
       if resp.success?
