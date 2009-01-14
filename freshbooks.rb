@@ -891,6 +891,18 @@ module FreshBooks
       @total = total
     end
     
+    def page
+      @page.to_i
+    end
+    
+    def per_page
+      @per_page.to_i
+    end
+    
+    def total
+      @total.to_i
+    end
+    
     def pages
       num_pages = total / per_page
       num_pages + 1 if total % per_page > 0
