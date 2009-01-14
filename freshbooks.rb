@@ -891,6 +891,12 @@ module FreshBooks
       @total = total
     end
     
+    def pages
+      num_pages = total / per_page
+      num_pages + 1 if total % per_page > 0
+      num_pages
+    end
+    
     def method_missing(method, *args, &block)
       @array.send(method, *args, &block)
     end
