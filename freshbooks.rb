@@ -261,10 +261,11 @@ module FreshBooks
       objects = objects.map { |object| self.new_from_xml(object) }
       
       page = root.attributes["page"]
+      pages = root.attributes["pages"]
       per_page = root.attributes["per_page"]
       total = root.attributes["total"]
       
-      ListProxy.new(objects, page, per_page, total)
+      ListProxy.new(objects, page, per_page, pages, total)
     end
   end
 
@@ -883,30 +884,13 @@ module FreshBooks
   end
   
   class ListProxy
-    attr_reader :page, :per_page, :total
-    def initialize(array, page, per_page, total)
+    attr_reader :page, :per_page, :pages, :total
+    def initialize(array, page, per_page, pages, total)
       @array = array
-      @page = page
-      @per_page = per_page
-      @total = total
-    end
-    
-    def page
-      @page.to_i
-    end
-    
-    def per_page
-      @per_page.to_i
-    end
-    
-    def total
-      @total.to_i
-    end
-    
-    def pages
-      num_pages = total / per_page
-      num_pages + 1 if total % per_page > 0
-      num_pages
+      @page = page.to_i
+      @per_page = per_page.to_i
+      @pages = pages.to_i
+      @total = total.to_i
     end
     
     def method_missing(method, *args, &block)
