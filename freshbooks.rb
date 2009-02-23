@@ -726,7 +726,7 @@ module FreshBooks
     end
 
     def update
-      resp = FreshBooks::call_api('invoice.update', 'estimate' => self)
+      resp = FreshBooks::call_api('estimate.update', 'estimate' => self)
 
       resp.success?
     end
@@ -764,25 +764,40 @@ module FreshBooks
   # Expenses
   #==========================================================================
 
-  Expense = BaseObject.new(:expense_id, :category_id, :project_id, :client_id, :staff_id,
-    :amount, :date, :notes, :status, :tax1_name, :tax1_percent, :tax1_amount,
-    :tax2_name, :tax2_percent, :tax2_amount)
-  
+  Expense = BaseObject.new(:expense_id, :staff_id, :category_id, :project_id, :client_id,
+    :amount, :date, :notes, :status, :tax1_name, :tax1_percent, :tax1_amount, :tax2_name, 
+    :tax2_percent, :tax2_amount)
   class Expense
-    TYPE_MAPPINGS = {
-      'category_id' => Fixnum, 
-      'project_id' => Fixnum,
-      'client_id' => Fixnum,
+    TYPE_MAPPINGS = { 
+      'expense_id' => Fixnum, 
       'staff_id' => Fixnum,
+      'category_id' => Fixnum,
+      'project_id' => Fixnum,
+      'client_id' => Fixnum, 
       'amount' => Float,
       'tax1_amount' => Float,
       'tax1_percent' => Float,
       'tax2_amount' => Float,
-      'tax2_percent' => Float
-    }
+      'tax2_percent' => Float }
 
-    MUTABILITY = {
-    }
+    def create
+      resp = FreshBooks::call_api('exp.create', 'expense' => self)
+      if resp.success?
+        self.expense_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.expense_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('expense.update', 'expense' => self)
+
+      resp.success?
+    end
+
+    def delete
+      expense::delete(self.expense_id)
+    end
     
     def self.get(expense_id)
       resp = FreshBooks::call_api('expense.get', 'expense_id' => expense_id)
@@ -802,87 +817,34 @@ module FreshBooks
       return nil unless resp.success?
       self.build_list_with_pagination(resp)
     end
-
-    def initialize
-      super
-    end
-
-    def create
-      resp = FreshBooks::call_api('expense.create', 'expense' => self)
-      if resp.success?
-        self.expense_id = resp.elements[1].text.to_i
-      end
-
-      resp.success? ? self.expense_id : nil
-    end
-
-    def update
-      resp = FreshBooks::call_api('expense.update', 'expense' => self)
-
-      resp.success?
-    end
-
-    def delete
-      Expense::delete(self.expense_id)
-    end
   end
-  
-  #--------------------------------------------------------------------------
-  # Staff
-  #==========================================================================
-
-  Staff = BaseObject.new(:staff_id, :username, :first_name, :last_name, :email)
-  
-  class Staff
-    TYPE_MAPPINGS = {
-    }
-
-    MUTABILITY = {
-    }
     
+    #--------------------------------------------------------------------------
+    # Staff
+    #==========================================================================
+
+  Staff = BaseObject.new(:staff_id, :username, :first_name, :last_name, 
+    :email,  :business_phone, :mobile_phone, :rate, :last_login,
+    :number_of_logins, :signup_date, 
+    :street1, :street2, :city, :state, :country, :code)
+
+  class Staff
+    TYPE_MAPPINGS = { 'staff_id' => Fixnum }
+
     def self.get(staff_id)
-      resp = FreshBooks::call_api('staff.get', 'expense_id' => staff_id)
+      resp = FreshBooks::call_api('staff.get', 'staff_id' => staff_id)
 
       resp.success? ? self.new_from_xml(resp.elements[1]) : nil
     end
 
-    def self.delete(staff_id)
-      resp = FreshBooks::call_api('staff.delete', 'expense_id' => staff_id)
-
-      resp.success?
-    end
-
     def self.list(options = {})
       resp = FreshBooks::call_api('staff.list', options)
-      
+
       return nil unless resp.success?
       self.build_list_with_pagination(resp)
     end
-
-    def initialize
-      super
-    end
-
-    def create
-      resp = FreshBooks::call_api('staff.create', 'staff' => self)
-      if resp.success?
-        self.staff_id = resp.elements[1].text.to_i
-      end
-
-      resp.success? ? self.expense_id : nil
-    end
-
-    def update
-      resp = FreshBooks::call_api('staff.update', 'staff' => self)
-
-      resp.success?
-    end
-
-    def delete
-      Expense::delete(self.expense_id)
-    end
   end
-  
+    
   class ListProxy
     attr_reader :page, :per_page, :pages, :total
     def initialize(array, page, per_page, pages, total)
@@ -892,7 +854,7 @@ module FreshBooks
       @pages = pages.to_i
       @total = total.to_i
     end
-    
+
     def method_missing(method, *args, &block)
       @array.send(method, *args, &block)
     end
