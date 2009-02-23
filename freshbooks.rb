@@ -280,6 +280,7 @@ module FreshBooks
 
   class Client
     TYPE_MAPPINGS = { 'client_id' => Fixnum }
+    MUTABILITY = { :url => :read_only }
     def create
       resp = FreshBooks::call_api('client.create', 'client' => self)
       if resp.success?
@@ -333,12 +334,14 @@ module FreshBooks
 
   Invoice = BaseObject.new(:invoice_id, :client_id, :number, :date, :po_number,
   :terms, :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city,
-  :p_state, :p_country, :p_code, :amount, :lines, :discount, :status, :notes, :url, :auth_url)
+  :p_state, :p_country, :p_code, :amount, :amount_oustanding, :paid,
+  :lines, :discount, :status, :notes, :url, :auth_url)
 
 
   class Invoice
     TYPE_MAPPINGS = { 'client_id' => Fixnum, 'lines' => Array,
-    'po_number' => Fixnum, 'discount' => Float, 'amount' => Float }
+    'po_number' => Fixnum, 'discount' => Float, 'amount' => Float,
+    'amount_outstanding' => Float, 'paid' => Float }
 
     MUTABILITY = { 
       :url => :read_only,
@@ -818,10 +821,62 @@ module FreshBooks
       self.build_list_with_pagination(resp)
     end
   end
+  
+  #--------------------------------------------------------------------------
+  # Categories
+  #==========================================================================
+
+  Category = BaseObject.new(:category_id, :name, :tax1, :tax2)
+  class Category
+    TYPE_MAPPINGS = { 'category_id' => Fixnum, 'tax1' => Float,
+      'tax2' => Float }
+
+    def create
+      resp = FreshBooks::call_api('category.create', 'category' => self)
+      if resp.success?
+        self.category_id = resp.elements[1].text.to_i
+      end
+
+      resp.success? ? self.category_id : nil
+    end
+
+    def update
+      resp = FreshBooks::call_api('category.update', 'category' => self)
+
+      resp.success?
+    end
+
+    def delete
+      Category::delete(self.category_id)
+    end
     
-    #--------------------------------------------------------------------------
-    # Staff
-    #==========================================================================
+    def self.get(category_id)
+      resp = FreshBooks::call_api('category.get', 'category_id' => category_id)
+
+      resp.success? ? self.new_from_xml(resp.elements[1]) : nil
+    end
+
+    def self.delete(category_id)
+      resp = FreshBooks::call_api('category.delete', 'category_id' => category_id)
+
+      resp.success?
+    end
+
+    def self.list(options = {})
+      resp = FreshBooks::call_api('category.list', options)
+      
+      return nil unless resp.success?
+
+      category_elems = resp.elements[1].elements
+      category_elems.map { |elem| self.new_from_xml(elem) }
+    end
+  end
+
+  
+    
+  #--------------------------------------------------------------------------
+  # Staff
+  #==========================================================================
 
   Staff = BaseObject.new(:staff_id, :username, :first_name, :last_name, 
     :email,  :business_phone, :mobile_phone, :rate, :last_login,
