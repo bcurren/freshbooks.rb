@@ -57,7 +57,7 @@ module FreshBooks
     def to_xml(elem_name = nil)
       # The root element is the class name underscored
       elem_name ||= self.class.to_s.split('::').last.underscore
-      root = Element.new elem_name
+      root = Element.new(elem_name)
       
       # Add each BaseObject member to the root elem
       self.schema_definition.members.each do |member_name, member_attributes|
@@ -68,15 +68,16 @@ module FreshBooks
         if value.kind_of?(Array)
           node = root.add_element(member_name)
           value.each { |array_elem|
-            node.add_element(array_elem.to_xml)
+            node.add_element(Document.new(array_elem.to_xml))
           }
         elsif value.kind_of?(FreshBooks::Base)
-          root.add_element(value.to_xml(member_name))
+          root.add_element(Document.new(value.to_xml(member_name)))
         elsif !value.nil?
           root.add_element(member_name).text = value
         end
       end
-      root
+      
+      root.to_s
     end
   end
 end

@@ -13,18 +13,24 @@ module Schema
       # One type
       @definition.string :name
       assert_equal 1, @definition.members.size
-      assert_equal({ :type => :string }, @definition.members["name"])
+      assert_equal({ :type => :string, :read_only => false }, @definition.members["name"])
       
       # Multiple attributes
       @definition.fixnum :version, :po_number
       assert_equal 3, @definition.members.size
-      assert_equal({ :type => :fixnum }, @definition.members["version"])
-      assert_equal({ :type => :fixnum }, @definition.members["po_number"])
+      assert_equal({ :type => :fixnum, :read_only => false }, @definition.members["version"])
+      assert_equal({ :type => :fixnum, :read_only => false }, @definition.members["po_number"])
       
       # Multiple times
       @definition.fixnum :lock_number
       assert_equal 4, @definition.members.size
-      assert_equal({ :type => :fixnum }, @definition.members["lock_number"])
+      assert_equal({ :type => :fixnum, :read_only => false }, @definition.members["lock_number"])
+    end
+    
+    def test_method_missing_extra_options
+      @definition.fixnum :version, :po_number, :read_only => true
+      assert_equal({ :type => :fixnum, :read_only => true }, @definition.members["version"])
+      assert_equal({ :type => :fixnum, :read_only => true }, @definition.members["po_number"])
     end
   end
 end

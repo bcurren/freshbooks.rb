@@ -17,8 +17,18 @@ module FreshBooks
           yield self.schema_definition
         
           # Process the schema additions
-          schema_definition.members.each do |member_name, member_properties|
-            attr_accessor member_name
+          schema_definition.members.each do |member|
+            process_schema_member(member)
+          end
+        end
+        
+        def process_schema_member(member)
+          member_name = member.first
+          member_options = member.last
+          
+          attr_accessor member_name
+          if member_options[:read_only]
+            protected "#{member_name}="
           end
         end
       end
