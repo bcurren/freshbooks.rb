@@ -79,5 +79,18 @@ module FreshBooks
       
       root.to_s
     end
+    
+    def self.build_list_with_pagination(response)
+      root = response.elements[1]
+      objects = root.elements
+      objects = objects.map { |object| self.new_from_xml(object) }
+      
+      page = root.attributes["page"]
+      pages = root.attributes["pages"]
+      per_page = root.attributes["per_page"]
+      total = root.attributes["total"]
+      
+      ListProxy.new(objects, page, per_page, pages, total)
+    end
   end
 end
