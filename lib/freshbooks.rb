@@ -1,6 +1,10 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-  
+
+require 'freshbooks/connection'
+require 'freshbooks/base'
+require 'freshbooks/invoice'
+
 require 'net/https'
 require 'rexml/document'
 require 'logger'
@@ -10,7 +14,6 @@ include REXML
 require 'freshbooks/response'
 require 'freshbooks/base_object'
 require 'freshbooks/client'
-require 'freshbooks/invoice'
 require 'freshbooks/payment'
 require 'freshbooks/recurring'
 require 'freshbooks/project'

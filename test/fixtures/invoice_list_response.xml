@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<response status="ok">
+  <invoices page="1" per_page="2" pages="2" total="3">
+    <invoice>
+      <invoice_id>1</invoice_id>
+      <number>number1</number>
+      <client_id>1</client_id>
+      <recurring_id>1</recurring_id>
+      <organization>Organization 1</organization>
+      <status>draft</status>
+      <amount>100.00</amount>
+      <amount_outstanding>50.00</amount_outstanding>
+      <date>2009-02-01</date>
+    </invoice>
+    <invoice>
+      <invoice_id>2</invoice_id>
+      <number>number2</number>
+      <client_id>2</client_id>
+      <recurring_id>2</recurring_id>
+      <organization>Organization 2</organization>
+      <status>draft</status>
+      <amount>200.00</amount>
+      <amount_outstanding>100.00</amount_outstanding>
+      <date>2009-02-02</date>
+    </invoice>
+  </invoices>
+</response>

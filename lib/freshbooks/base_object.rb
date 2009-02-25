@@ -16,7 +16,10 @@ module FreshBooks
     MAPPING_FNS = {
       Fixnum     => lambda { |xml_val| xml_val.text.to_i },
       Float      => lambda { |xml_val| xml_val.text.to_f },
-      BaseObject => lambda { |xml_val| BaseObject.class::new_from_xml },
+      BaseObject => lambda { |xml_val| 
+        FreshBooks::const_get(xml_val.name.capitalize)::new_from_xml(xml_val) 
+      },
+      Date       => lambda { |xml_val| Date.parse(xml_val.text.to_s) },
       Array      => lambda do |xml_val|
         xml_val.elements.map do |elem|
           FreshBooks::const_get(elem.name.capitalize)::new_from_xml(elem)
@@ -72,12 +75,12 @@ module FreshBooks
       root = response.elements[1]
       objects = root.elements
       objects = objects.map { |object| self.new_from_xml(object) }
-    
+      
       page = root.attributes["page"]
       pages = root.attributes["pages"]
       per_page = root.attributes["per_page"]
       total = root.attributes["total"]
-    
+      
       ListProxy.new(objects, page, per_page, pages, total)
     end
   end

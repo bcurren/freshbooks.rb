@@ -1,0 +1,10 @@
+History.txt
+Manifest.txt
+Rakefile
+lib/freshbooks.rb
+lib/freshbooks/connection.rb
+script/console
+script/destroy
+script/generate
+test/test_connection.rb
+test/test_helper.rb

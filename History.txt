@@ -1,0 +1,7 @@
+== 0.0.1 2009-02-25
+
+* 3.0 major enhancement:
+  * Create connection class
+  * Create gem
+  * Parse dates to ruby date objects
+  * Added links to objects
