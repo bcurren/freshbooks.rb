@@ -40,11 +40,11 @@ module FreshBooks
     def self.new_from_xml(xml_root)
       object = self.new
       
-      self.schema_definition.members.each do |member_name, member_attributes|
+      self.schema_definition.members.each do |member_name, member_options|
         node = xml_root.elements[member_name]
         next if node.nil?
         
-        member_type = member_attributes[:type]
+        member_type = member_options[:type]
         mapping_lambda = self::MAPPING_FNS[member_type]
         raise "No mapping type #{member_type} defined." if mapping_lambda.nil?
         
@@ -60,8 +60,8 @@ module FreshBooks
       root = Element.new(elem_name)
       
       # Add each BaseObject member to the root elem
-      self.schema_definition.members.each do |member_name, member_attributes|
-        # next if self.class::MUTABILITY[member_name.to_sym] == :read_only
+      self.schema_definition.members.each do |member_name, member_options|
+        next if member_options[:read_only]
         
         value = self.send(member_name)
         

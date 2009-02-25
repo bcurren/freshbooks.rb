@@ -51,7 +51,7 @@ class TestBase < Test::Unit::TestCase
     assert_equal "<my_item>", xml_out.first(9)
     assert xml_out.include?("<name>name1</name>")
     assert xml_out.include?("<amount>4.5</amount>")
-    assert xml_out.include?("<number>5</number>")
+    assert !xml_out.include?("<number>5</number>") # this is read only
     assert xml_out.include?("<date>2008-02-01</date>")
     assert xml_out.include?("<my_address><street1>street1</street1></my_address>")
     assert xml_out.include?("<my_lines><my_line><description>description</description></my_line></my_lines>")
@@ -63,7 +63,7 @@ module FreshBooks
   class MyItem < FreshBooks::Base
     define_schema do |s|
       s.string :name
-      s.fixnum :number
+      s.fixnum :number, :read_only => true
       s.float :amount
       s.date :date
       s.object :my_address
