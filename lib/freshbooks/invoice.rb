@@ -1,121 +1,61 @@
 require 'freshbooks/base_object'
 
 module FreshBooks
-  Invoice = BaseObject.new(
-    :invoice_id, :number, :client_id, :recurring_id, :organization, :status,
-    :amount, :amount_outstanding, :date,
-    
-    :po_number, :discount, :notes, :terms,
-    
-    :first_name, :last_name, :p_street1, :p_street2, :p_city, :p_state,
-    :p_country, :p_code,
-    
-    :lines, :links)
-  
-  class Invoice
-    TYPE_MAPPINGS = {
-      "invoice_id" => Fixnum,
-      'client_id' => Fixnum,
-      'recurring_id' => Fixnum,
-      'amount' => Float,
-      'amount_outstanding' => Float,
-      'date' => Date,
-      'po_number' => Fixnum,
-      'discount' => Float,
-      'lines' => Array,
-      'links' => BaseObject
-    }
-    
-    MUTABILITY = { 
-      :url => :read_only,
-      :auth_url => :read_only
-    }
-    
-    
-    
-    
-    
-    def self.api_class_name
-      # Remove module, underscore between words, lowercase
-      self.name.
-        gsub(/^.*::/, "").
-        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-        gsub(/([a-z\d])([A-Z])/,'\1_\2').
-        downcase
+  class Invoice < FreshBooks::Base
+    define_schema do |s|
+      s.fixnum :invoice_id, :client_id, :recurring_id, :po_number
+      s.float :amount, :amount_outstanding, :discount
+      s.date :date
+      s.array :lines
+      s.object :links
+      s.string :number, :organization, :status, :notes, :terms, :first_name, :last_name
+      s.string :p_street1, :p_street2, :p_city, :p_state, :p_country, :p_code
     end
     
-    def self.api_list_action(action_name, options = {})
-      response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
-      self.build_list_with_pagination(response) if response.success?
+    def self.define_class_method(symbol, &block)
+      self.class.send(:define_method, symbol, &block)
     end
     
-    def self.api_get_action(action_name, object_id)
-      response = FreshBooks::Base.connection.call_api(
-        "#{api_class_name}.#{action_name}",
-        "#{api_class_name}_id" => object_id)
-      response.success? ? self.new_from_xml(response.elements[1]) : nil
+    def self.actions(*operations)
+      operations.each do |operation|
+        method_name = operation.to_s
+        api_action_name = method_name.camelize(:lower)
+        
+        case method_name
+        when "list"
+          define_class_method(method_name) do |*args|
+            options = args.any? ? args.first : {}
+            api_list_action(api_action_name, options)
+          end
+        when "get"
+          define_class_method(method_name) do |object_id|
+            api_get_action(api_action_name, object_id)
+          end
+        when "create"
+          define_method(method_name) do
+            api_create_action(api_action_name)
+          end
+        when "update"
+          define_method(method_name) do
+            api_update_action(api_action_name)
+          end
+        else
+          define_method(method_name) do
+            api_action(api_action_name)
+          end
+        end
+      end
     end
     
-    def self.api_action(action_name, object_id)
-      response = FreshBooks::Base.connection.call_api(
-        "#{api_class_name}.#{action_name}", 
-        "#{api_class_name}_id" => object_id)
-      response.success?
-    end
-    
-    
-    
-    
-    
-    
-    def initialize
-      super
-      self.lines ||= []
-    end
-    
-    def self.list(options = {})
-      self.api_list_action("list", options)
-    end
-    
-    def self.get(object_id)
-      self.api_get_action("get", object_id)
-    end
-    
-    def self.delete(object_id)
-      self.api_action("delete", object_id)
-    end
-    
-    def self.send_by_email(object_id)
-      self.api_action("sendByEmail", object_id)
-    end
-
-    def self.send_by_snail_mail(object_id)
-      self.api_action("sendBySnailMail", object_id)
-    end
-    
-    def create
-      response = FreshBooks::Base.connection.call_api('invoice.create', 'invoice' => self)
-      self.invoice_id = response.elements[1].text.to_i if response.success?
-      response.success?
-    end
-    
-    def update
-      response = FreshBooks::Base.connection.call_api('invoice.update', 'invoice' => self)
-      response.success?
-    end
-    
-    def delete
-      self.class.delete(self.invoice_id)
-    end
-    
-    def send_by_email
-      self.class.send_by_email(self.invoice_id) 
-    end
-    
-    def send_by_snail_mail
-      self.class.send_by_snail_mail(self.invoice_id)
-    end
+    actions :list, :get, :create, :update, :delete, :send_by_email, :send_by_snail_mail
   end
+  
+  
+  
+  
+  
+  
+  
   
   Links = BaseObject.new(:client_view, :view, :edit)
   class Links

@@ -44,7 +44,7 @@ module FreshBooks
         key = element.first
         value = element.last
         
-        if value.is_a?(BaseObject)
+        if value.is_a?(BaseObject) || value.is_a?(Base)
           request.add_element(value.to_xml)
         else
           request.add_element(Element.new(key.to_s)).text = value.to_s

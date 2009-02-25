@@ -92,5 +92,85 @@ module FreshBooks
       
       ListProxy.new(objects, page, per_page, pages, total)
     end
+    
+    
+    
+    
+    
+    def primary_key
+      "#{self.class.api_class_name}_id"
+    end
+    
+    def primary_key_value
+      send(primary_key)
+    end
+    
+    def primary_key_value=(value)
+      send("#{primary_key}=", value)
+    end
+    
+    def self.api_class_name
+      klass = class_of_active_record_descendant(self)
+      
+      # Remove module, underscore between words, lowercase
+      klass.name.
+        gsub(/^.*::/, "").
+        gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+        gsub(/([a-z\d])([A-Z])/,'\1_\2').
+        downcase
+    end
+    
+    def self.class_of_active_record_descendant(klass)
+      if klass.superclass == Base
+        klass
+      elsif klass.superclass.nil?
+        raise "#{name} doesn't belong in a hierarchy descending from ActiveRecord"
+      else
+        self.class_of_active_record_descendant(klass.superclass)
+      end
+    end
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def self.api_list_action(action_name, options = {})
+      response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
+      self.build_list_with_pagination(response) if response.success?
+    end
+    
+    def self.api_get_action(action_name, object_id)
+      response = FreshBooks::Base.connection.call_api(
+        "#{api_class_name}.#{action_name}",
+        "#{api_class_name}_id" => object_id)
+      response.success? ? self.new_from_xml(response.elements[1]) : nil
+    end
+    
+    def api_action(action_name)
+      response = FreshBooks::Base.connection.call_api(
+        "#{self.class.api_class_name}.#{action_name}", 
+        "#{self.class.api_class_name}_id" => primary_key_value)
+      response.success?
+    end
+    
+    def api_create_action(action_name)
+      response = FreshBooks::Base.connection.call_api(
+        "#{self.class.api_class_name}.#{action_name}",
+        self.class.api_class_name => self)
+      self.primary_key_value = response.elements[1].text.to_i if response.success?
+      response.success?
+    end
+    
+    def api_update_action(action_name)
+      response = FreshBooks::Base.connection.call_api(
+        "#{self.class.api_class_name}.#{action_name}",
+        self.class.api_class_name => self)
+      response.success?
+    end
+    
   end
 end

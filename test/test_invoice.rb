@@ -18,27 +18,6 @@ class TestInvoice < Test::Unit::TestCase
     assert_invoice invoice, 0, true
   end
   
-  def test_delete__class
-    invoice_id = 2
-    mock_call_api("invoice.delete", { "invoice_id" => invoice_id }, "success_response")
-    
-    assert FreshBooks::Invoice.delete(invoice_id)
-  end
-  
-  def test_send_by_email__class
-    invoice_id = 2
-    mock_call_api("invoice.sendByEmail", { "invoice_id" => invoice_id }, "success_response")
-    
-    assert FreshBooks::Invoice.send_by_email(invoice_id)
-  end
-  
-  def test_send_by_snail_mail__class
-    invoice_id = 2
-    mock_call_api("invoice.sendBySnailMail", { "invoice_id" => invoice_id }, "success_response")
-    
-    assert FreshBooks::Invoice.send_by_snail_mail(invoice_id)
-  end
-  
   def test_create
     invoice = FreshBooks::Invoice.new
     assert_nil invoice.invoice_id
