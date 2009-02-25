@@ -7,7 +7,7 @@ $hoe = Hoe.new('freshbooks.rb', FreshBooks::VERSION) do |p|
   p.developer('Ben Curren', 'ben@outright.com')
   p.changes              = p.paragraphs_of("History.txt", 0..1).join("\n\n")
   p.rubyforge_name       = p.name # TODO this is default value
-  p.extra_deps         = []
+  p.extra_deps         = ['activesupport']
   p.extra_dev_deps = [
     ['newgem', ">= #{::Newgem::VERSION}"],
     ['mocha', ">= 0.9.4"]
