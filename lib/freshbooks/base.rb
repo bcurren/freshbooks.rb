@@ -133,6 +133,41 @@ module FreshBooks
     
     
     
+    def self.define_class_method(symbol, &block)
+      self.class.send(:define_method, symbol, &block)
+    end
+    
+    
+    def self.actions(*operations)
+      operations.each do |operation|
+        method_name = operation.to_s
+        api_action_name = method_name.camelize(:lower)
+        
+        case method_name
+        when "list"
+          define_class_method(method_name) do |*args|
+            args << {} if args.empty? # first param is optional and default to empty hash
+            api_list_action(api_action_name, *args)
+          end
+        when "get"
+          define_class_method(method_name) do |object_id|
+            api_get_action(api_action_name, object_id)
+          end
+        when "create"
+          define_method(method_name) do
+            api_create_action(api_action_name)
+          end
+        when "update"
+          define_method(method_name) do
+            api_update_action(api_action_name)
+          end
+        else
+          define_method(method_name) do
+            api_action(api_action_name)
+          end
+        end
+      end
+    end
     
     
     
