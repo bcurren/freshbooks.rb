@@ -58,10 +58,6 @@ module FreshBooks
       ListProxy.new(objects, page, per_page, pages, total)
     end
     
-    
-    
-    
-    
     def primary_key
       "#{self.class.api_class_name}_id"
     end
@@ -75,7 +71,7 @@ module FreshBooks
     end
     
     def self.api_class_name
-      klass = class_of_active_record_descendant(self)
+      klass = class_of_freshbooks_base_descendant(self)
       
       # Remove module, underscore between words, lowercase
       klass.name.
@@ -85,18 +81,15 @@ module FreshBooks
         downcase
     end
     
-    def self.class_of_active_record_descendant(klass)
+    def self.class_of_freshbooks_base_descendant(klass)
       if klass.superclass == Base
         klass
       elsif klass.superclass.nil?
         raise "#{name} doesn't belong in a hierarchy descending from ActiveRecord"
       else
-        self.class_of_active_record_descendant(klass.superclass)
+        self.class_of_freshbooks_base_descendant(klass.superclass)
       end
     end
-    
-    
-    
     
     def self.define_class_method(symbol, &block)
       self.class.send(:define_method, symbol, &block)
@@ -133,10 +126,6 @@ module FreshBooks
         end
       end
     end
-    
-    
-    
-    
     
     def self.api_list_action(action_name, options = {})
       response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
