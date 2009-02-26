@@ -3,5 +3,6 @@
 * 3.0 major enhancement:
   * Create connection class
   * Create gem
-  * Parse dates to ruby date objects
+  * Convert xml to ruby type: date, date_time, boolean
   * Added links to objects
+  * Create DSL to describe FreshBooks actions
