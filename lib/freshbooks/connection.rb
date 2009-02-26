@@ -80,7 +80,7 @@ module FreshBooks
     end
     
     def check_for_api_error(result)
-      return result.body if result.class == Net::HTTPSuccess
+      return result.body if result.kind_of?(Net::HTTPSuccess)
       
       case result
       when Net::HTTPRedirection

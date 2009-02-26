@@ -9,9 +9,24 @@ rescue LoadError
   require 'active_support'
 end
 
-require 'freshbooks/connection'
 require 'freshbooks/base'
+require 'freshbooks/category'
+require 'freshbooks/client'
+require 'freshbooks/connection'
+require 'freshbooks/estimate'
+require 'freshbooks/expense'
 require 'freshbooks/invoice'
+require 'freshbooks/item'
+require 'freshbooks/line'
+require 'freshbooks/links'
+require 'freshbooks/list_proxy'
+require 'freshbooks/payment'
+require 'freshbooks/project'
+require 'freshbooks/recurring'
+require 'freshbooks/response'
+require 'freshbooks/staff'
+require 'freshbooks/task'
+require 'freshbooks/time_entry'
 
 require 'net/https'
 require 'rexml/document'
@@ -19,19 +34,8 @@ require 'logger'
 
 include REXML
 
-require 'freshbooks/response'
+
 require 'freshbooks/base_object'
-require 'freshbooks/client'
-require 'freshbooks/payment'
-require 'freshbooks/recurring'
-require 'freshbooks/project'
-require 'freshbooks/task'
-require 'freshbooks/time_entry'
-require 'freshbooks/estimate'
-require 'freshbooks/expense'
-require 'freshbooks/category'
-require 'freshbooks/staff'
-require 'freshbooks/list_proxy'
 
 #------------------------------------------------------------------------------
 # FreshBooks.rb - Ruby interface to the FreshBooks API

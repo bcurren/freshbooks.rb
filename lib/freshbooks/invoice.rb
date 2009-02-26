@@ -1,5 +1,3 @@
-require 'freshbooks/base_object'
-
 module FreshBooks
   class Invoice < FreshBooks::Base
     define_schema do |s|
@@ -14,30 +12,5 @@ module FreshBooks
     end
     
     actions :list, :get, :create, :update, :delete, :send_by_email, :send_by_snail_mail
-  end
-  
-  class Links < FreshBooks::Base
-    define_schema do |s|
-      s.string :client_view, :view, :edit, :read_only => true
-    end
-  end
-  
-  class Line < FreshBooks::Base
-    define_schema do |s|
-      s.string :name, :description, :tax1_name, :tax2_name
-      s.float :unit_cost, :tax1_percent, :tax2_percent
-      s.float :amount, :read_only => true
-      s.fixnum :quantity
-    end
-  end
-  
-  class Item < FreshBooks::Base
-    define_schema do |s|
-      s.fixnum :item_id, :quantity, :inventory
-      s.float :unit_cost
-      s.string :name, :description
-    end
-    
-    actions :create, :update, :get, :delete, :list
   end
 end
