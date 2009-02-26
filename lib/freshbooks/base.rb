@@ -1,4 +1,5 @@
 require 'freshbooks/schema/mixin'
+require 'freshbooks/xml_serializer'
 
 module FreshBooks
   class Base
@@ -13,30 +14,6 @@ module FreshBooks
       @@connection = Connection.new(account_url, auth_token, request_headers)
     end
     
-    
-    MAPPING_FNS = {
-      :string => lambda { |xml_val| 
-        xml_val.text.to_s
-      },
-      :fixnum => lambda { |xml_val| 
-        xml_val.text.to_i
-      },
-      :float => lambda { |xml_val|
-        xml_val.text.to_f 
-      },
-      :date => lambda { |xml_val| 
-        Date.parse(xml_val.text.to_s) 
-      },
-      :object => lambda { |xml_val| 
-        FreshBooks::const_get(xml_val.name.camelize)::new_from_xml(xml_val) 
-      },
-      :array  => lambda { |xml_val|
-        xml_val.elements.map { |elem|
-          FreshBooks::const_get(elem.name.camelize)::new_from_xml(elem)
-        }
-      }
-    }
-    
     def self.new_from_xml(xml_root)
       object = self.new
       
@@ -44,11 +21,8 @@ module FreshBooks
         node = xml_root.elements[member_name]
         next if node.nil?
         
-        member_type = member_options[:type]
-        mapping_lambda = self::MAPPING_FNS[member_type]
-        raise "No mapping type #{member_type} defined." if mapping_lambda.nil?
-        
-        object.send("#{member_name}=", mapping_lambda.call(node))
+        value = FreshBooks::XmlSerializer.to_value(node, member_options[:type])
+        object.send("#{member_name}=", value)
       end
       
       return object
@@ -61,20 +35,11 @@ module FreshBooks
       
       # Add each BaseObject member to the root elem
       self.schema_definition.members.each do |member_name, member_options|
-        next if member_options[:read_only]
-        
         value = self.send(member_name)
+        next if member_options[:read_only] || value.nil?
         
-        if value.kind_of?(Array)
-          node = root.add_element(member_name)
-          value.each { |array_elem|
-            node.add_element(Document.new(array_elem.to_xml))
-          }
-        elsif value.kind_of?(FreshBooks::Base)
-          root.add_element(Document.new(value.to_xml(member_name)))
-        elsif !value.nil?
-          root.add_element(member_name).text = value
-        end
+        element = FreshBooks::XmlSerializer.to_node(member_name, value, member_options[:type])
+        root.add_element(element) if element != nil
       end
       
       root.to_s

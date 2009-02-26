@@ -5,7 +5,7 @@ module FreshBooks
       s.string :username, :first_name, :last_name, :email, :business_phone, :mobile_phone
       s.string :street1, :street2, :city, :state, :country, :code
       s.float :rate
-      s.datetime :last_login, :signup_date
+      s.date_time :last_login, :signup_date
     end
     
     actions :list, :get
