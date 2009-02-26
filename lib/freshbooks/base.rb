@@ -33,7 +33,7 @@ module FreshBooks
       elem_name ||= self.class.to_s.split('::').last.underscore
       root = Element.new(elem_name)
       
-      # Add each BaseObject member to the root elem
+      # Add each member to the root elem
       self.schema_definition.members.each do |member_name, member_options|
         value = self.send(member_name)
         next if member_options[:read_only] || value.nil?

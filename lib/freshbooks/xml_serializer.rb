@@ -11,8 +11,7 @@ module FreshBooks
     end
     
     def self.create_serializer(type)
-      klass_name = "FreshBooks::XmlSerializer::#{type.to_s.classify}Serializer"
-      klass = klass_name.constantize
+      "FreshBooks::XmlSerializer::#{type.to_s.classify}Serializer".constantize
     end
   end
 end
