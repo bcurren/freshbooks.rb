@@ -8,7 +8,7 @@ module FreshBooks
       @pages = pages.to_i
       @total = total.to_i
     end
-
+    
     def method_missing(method, *args, &block)
       @array.send(method, *args, &block)
     end
