@@ -2,10 +2,10 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestInvoice < Test::Unit::TestCase
   def test_list
-    mock_call_api("invoice.list", {}, "invoice_list_response")
+    mock_call_api("invoice.list", { "page" => 1 }, "invoice_list_response")
     
     invoices = FreshBooks::Invoice.list
-    assert_equal 2, invoices.size
+    assert_equal 3, invoices.size
     assert_invoice invoices[0], 0
     assert_invoice invoices[1], 1
   end

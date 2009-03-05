@@ -45,19 +45,6 @@ module FreshBooks
       root.to_s
     end
     
-    def self.build_list_with_pagination(response)
-      root = response.elements[1]
-      objects = root.elements
-      objects = objects.map { |object| self.new_from_xml(object) }
-      
-      page = root.attributes["page"]
-      pages = root.attributes["pages"]
-      per_page = root.attributes["per_page"]
-      total = root.attributes["total"]
-      
-      ListProxy.new(objects, page, per_page, pages, total)
-    end
-    
     def primary_key
       "#{self.class.api_class_name}_id"
     end
@@ -128,8 +115,10 @@ module FreshBooks
     end
     
     def self.api_list_action(action_name, options = {})
-      response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
-      self.build_list_with_pagination(response) if response.success?
+      call_api_proc = proc do |options|
+        FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
+      end
+      ListProxy.new(call_api_proc, self, options)
     end
     
     def self.api_get_action(action_name, object_id)
