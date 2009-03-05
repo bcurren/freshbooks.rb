@@ -2,11 +2,9 @@ module FreshBooks
   class ListProxy
     include Enumerable
     
-    def initialize(call_api_proc, klass, options = {})
-      @call_api_proc = call_api_proc
-      @klass = klass
-      @options = options
-      move_to_page(@options["page"] ? @options["page"].to_i : 1)
+    def initialize(list_page_proc)
+      @list_page_proc = list_page_proc
+      move_to_page(1)
     end
     
     def each(&block)
@@ -34,18 +32,7 @@ module FreshBooks
     
     def move_to_page(page)
       return true if @current_page && @current_page.page == page
-      
-      @options["page"] = page
-      response = @call_api_proc.call(@options)
-      raise FreshBooks::InternalError.new("Response was not successful. This should never happen.") unless response.success?
-      parse_response(response)
-    end
-    
-    def parse_response(response)
-      root = response.elements[1]
-      @array = root.elements.map { |item| @klass.new_from_xml(item) }
-      @current_page = Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'])
-      true
+      @array, @current_page = @list_page_proc.call(page)
     end
   end
   
