@@ -40,3 +40,5 @@ test/test_base.rb
 test/test_connection.rb
 test/test_helper.rb
 test/test_invoice.rb
+test/test_list_proxy.rb
+test/test_page.rb
