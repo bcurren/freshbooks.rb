@@ -2,7 +2,7 @@ module FreshBooks
   module XmlSerializer
     class FixnumSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value.to_s
         element
       end
@@ -14,7 +14,7 @@ module FreshBooks
     
     class FloatSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value.to_s
         element
       end
@@ -26,7 +26,7 @@ module FreshBooks
     
     class DateSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value.to_s
         element
       end
@@ -38,7 +38,7 @@ module FreshBooks
     
     class StringSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value.to_s
         element
       end
@@ -50,7 +50,7 @@ module FreshBooks
     
     class BooleanSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value ? '1' : '0'
         element
       end
@@ -62,7 +62,7 @@ module FreshBooks
     
     class ObjectSerializer
       def self.to_node(member_name, value)
-        Document.new(value.to_xml(member_name))
+        REXML::Document.new(value.to_xml(member_name))
       end
       
       def self.to_value(xml_val)
@@ -72,9 +72,9 @@ module FreshBooks
     
     class ArraySerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         value.each { |array_elem|
-          element.add_element(Document.new(array_elem.to_xml))
+          element.add_element(REXML::Document.new(array_elem.to_xml))
         }
         element
       end
@@ -88,7 +88,7 @@ module FreshBooks
     
     class DateTimeSerializer
       def self.to_node(member_name, value)
-        element = Element.new(member_name)
+        element = REXML::Element.new(member_name)
         element.text = value.to_s(:db)
         element
       end

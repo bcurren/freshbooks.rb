@@ -33,7 +33,7 @@ module FreshBooks
   protected
     
     def create_request(method, elements = [])
-      doc = Document.new '<?xml version="1.0" encoding="UTF-8"?>'
+      doc = REXML::Document.new '<?xml version="1.0" encoding="UTF-8"?>'
       request = doc.add_element('request')
       request.attributes['method'] = method
       
@@ -47,7 +47,7 @@ module FreshBooks
         if value.kind_of?(Base)
           request.add_element(value.to_xml)
         else
-          request.add_element(Element.new(key.to_s)).text = value.to_s
+          request.add_element(REXML::Element.new(key.to_s)).text = value.to_s
         end
       end
       

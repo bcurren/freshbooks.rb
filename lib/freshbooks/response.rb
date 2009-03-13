@@ -3,7 +3,7 @@ module FreshBooks
     attr_accessor :doc
     
     def initialize(xml_raw)
-      @doc = Document.new(xml_raw)
+      @doc = REXML::Document.new(xml_raw)
     end
     
     def elements

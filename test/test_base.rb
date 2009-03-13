@@ -37,7 +37,7 @@ class TestBase < Test::Unit::TestCase
         </my_lines>
       </my_item>
     EOS
-    doc = Document.new(xml)
+    doc = REXML::Document.new(xml)
     
     item = FreshBooks::MyItem.new_from_xml(doc.root)
     assert_equal "name1", item.name

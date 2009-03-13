@@ -32,8 +32,6 @@ require 'net/https'
 require 'rexml/document'
 require 'logger'
 
-include REXML
-
 #------------------------------------------------------------------------------
 # FreshBooks.rb - Ruby interface to the FreshBooks API
 #

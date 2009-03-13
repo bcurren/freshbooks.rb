@@ -31,7 +31,7 @@ module FreshBooks
     def to_xml(elem_name = nil)
       # The root element is the class name underscored
       elem_name ||= self.class.to_s.split('::').last.underscore
-      root = Element.new(elem_name)
+      root = REXML::Element.new(elem_name)
       
       # Add each member to the root elem
       self.schema_definition.members.each do |member_name, member_options|
