@@ -29,8 +29,6 @@
 require 'net/https'
 require 'rexml/document'
 
-include REXML
-
 module FreshBooks
   VERSION = '2.2.1'     # Gem version
   API_VERSION = '2.1' # FreshBooks API version
@@ -60,7 +58,7 @@ module FreshBooks
   end
 
   def self.call_api(method, elems = [])
-    doc = Document.new '<?xml version="1.0" encoding="UTF-8"?>'
+    doc = REXML::Document.new '<?xml version="1.0" encoding="UTF-8"?>'
     request = doc.add_element 'request'
     request.attributes['method'] = method
 
@@ -69,7 +67,7 @@ module FreshBooks
         elem = value.to_xml
         request.add_element elem
       else
-        request.add_element(Element.new(key)).text = value.to_s
+        request.add_element(REXML::Element.new(key)).text = value.to_s
       end
     end
 
@@ -116,7 +114,7 @@ module FreshBooks
   class Response
     attr_accessor :doc
     def initialize(xml_raw)
-      @doc = Document.new xml_raw
+      @doc = REXML::Document.new xml_raw
     end
 
     def elements
@@ -189,7 +187,7 @@ module FreshBooks
     def to_xml(elem_name = nil)
       # The root element is the class name, downcased
       elem_name ||= self.class.to_s.split('::').last.downcase
-      root = Element.new elem_name
+      root = REXML::Element.new elem_name
 
       # Add each BaseObject member to the root elem
       self.members.each do |field_name|
