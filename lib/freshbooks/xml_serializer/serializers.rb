@@ -32,7 +32,13 @@ module FreshBooks
       end
       
       def self.to_value(xml_val)
-        Date.parse(xml_val.text.to_s) 
+        begin
+          Date.parse(xml_val.text.to_s) 
+        rescue ArgumentError => e
+          # Sometimes freshbooks gives dates that look like this 0000-00-00 00:00:00
+          # just default to todays date, you have any other suggestions?
+          Date.new
+        end
       end
     end
     

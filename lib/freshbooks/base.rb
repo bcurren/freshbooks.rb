@@ -26,6 +26,9 @@ module FreshBooks
       end
       
       return object
+      
+    rescue => e
+      raise ParseError.new(e, xml_root.to_s)
     end
     
     def to_xml(elem_name = nil)
