@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{freshbooks.rb}
-  s.version = "3.0.2"
+  s.version = "3.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Curren"]
-  s.date = %q{2009-06-04}
+  s.date = %q{2009-06-12}
   s.description = %q{}
   s.email = ["ben@outright.com"]
   s.extra_rdoc_files = ["History.txt", "Manifest.txt"]
