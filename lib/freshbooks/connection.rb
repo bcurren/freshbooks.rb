@@ -22,12 +22,26 @@ module FreshBooks
       @account_url = account_url
       @auth_token = auth_token
       @request_headers = request_headers
+      
+      @start_session_count = 0
     end
     
     def call_api(method, elements = [])
       request = create_request(method, elements)
       result = post(request)
       Response.new(result)
+    end
+    
+    def start_session(&block)
+      @connection = obtain_connection if @start_session_count == 0
+      @start_session_count = @start_session_count + 1
+      
+      begin
+        block.call(@connection)
+      ensure
+        @start_session_count = @start_session_count - 1
+        close if @start_session_count == 0
+      end
     end
     
   protected
@@ -54,11 +68,22 @@ module FreshBooks
       doc.to_s
     end
     
-    def post(request_body)
-      connection = Net::HTTP.new(@account_url, 443)
-      connection.use_ssl = true
-      connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    def obtain_connection
+      return @connection if @connection
       
+      @connection = Net::HTTP.new(@account_url, 443)
+      @connection.use_ssl = true
+      @connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      @connection.start
+    end
+    
+    def close
+      @connection.finish if @connection
+      @connection = nil
+    end
+    
+    def post(request_body)
+      result = nil
       request = Net::HTTP::Post.new(FreshBooks::SERVICE_URL)
       request.basic_auth @auth_token, 'X'
       request.body = request_body
@@ -67,7 +92,9 @@ module FreshBooks
         request[name.to_s] = value
       end
       
-      result = connection.start  { |http| http.request(request) }
+      start_session do |connection|
+        result = connection.request(request)
+      end
       
       if logger.debug?
         logger.debug "Request:"

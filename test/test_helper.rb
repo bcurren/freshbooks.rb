@@ -13,6 +13,22 @@ rescue LoadError
 end
 
 class Test::Unit::TestCase
+  
+  @@fixtures = {}
+  def self.fixtures list
+    [list].flatten.each do |fixture|
+      self.class_eval do
+        # add a method name for this fixture type
+        define_method(fixture) do |item|
+          # load and cache the YAML
+          @@fixtures[fixture] ||= YAML::load_file(self.fixture_dir + "/#{fixture.to_s}.yml")
+          @@fixtures[fixture][item.to_s]
+        end
+      end
+    end
+  end
+  
+  
   def mock_connection(file_name)
     mock_connection = MockConnection.new(fixture_xml_content(file_name))
     FreshBooks::Base.stubs(:connection).with().returns(mock_connection)

@@ -80,4 +80,18 @@ class TestConnection < Test::Unit::TestCase
       @connection.send(:check_for_api_error, response)
     end
   end
+  
+  def test_close_is_only_called_once_in_ntexted_start_sessions
+    body = "body xml"
+    response = Net::HTTPSuccess.new("1.1", "200", "message")
+    response.expects(:body).with().returns(body)
+    # only call close once once
+    @connection.expects(:close)
+    @connection.start_session do
+      @connection.start_session do
+        assert_equal body, @connection.send(:check_for_api_error, response)
+      end
+    end
+  end
+
 end
