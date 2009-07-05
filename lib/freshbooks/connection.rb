@@ -59,7 +59,7 @@ module FreshBooks
         value = element.last
         
         if value.kind_of?(Base)
-          request.add_element(value.to_xml)
+          request.add_element(REXML::Document.new(value.to_xml))
         else
           request.add_element(REXML::Element.new(key.to_s)).text = value.to_s
         end

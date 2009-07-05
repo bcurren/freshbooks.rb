@@ -24,12 +24,11 @@ class TestConnection < Test::Unit::TestCase
   
   def test_create_request__base_object_element
     invoice = FreshBooks::Invoice.new
-    invoice.expects(:to_xml).with().returns("invoice")
+    invoice.expects(:to_xml).with().returns("<invoice><number>23</number></invoice>")
     
     request = @connection.send(:create_request, 'mymethod', 'invoice' => invoice)
-    assert_equal "<?xml version='1.0' encoding='UTF-8'?><request method='mymethod'><invoice/></request>", request
+    assert_equal "<?xml version='1.0' encoding='UTF-8'?><request method='mymethod'><invoice><number>23</number></invoice></request>", request
   end
-  
   
   def test_check_for_api_error__success
     body = "body xml"
