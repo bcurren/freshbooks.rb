@@ -1,8 +1,10 @@
 History.txt
 LICENSE
 Manifest.txt
+Manifest.txt2
 README
 Rakefile
+freshbooks.rb.gemspec
 lib/freshbooks.rb
 lib/freshbooks/base.rb
 lib/freshbooks/category.rb
@@ -29,6 +31,7 @@ lib/freshbooks/xml_serializer/serializers.rb
 script/console
 script/destroy
 script/generate
+test/fixtures/freshbooks_credentials.sample.yml
 test/fixtures/invoice_create_response.xml
 test/fixtures/invoice_get_response.xml
 test/fixtures/invoice_list_response.xml
