@@ -7,6 +7,7 @@ module FreshBooks
       s.fixnum :client_id, :po_number
       s.float :discount, :amount
       s.array :lines
+      s.object :links, :read_only => true
     end
     
     actions :list, :get, :create, :update, :delete, :send_by_email
