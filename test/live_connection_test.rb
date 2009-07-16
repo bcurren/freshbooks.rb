@@ -10,7 +10,7 @@ class LiveConnectionTest < Test::Unit::TestCase
   end
 
   # just go out there and get a live connection and see if it returns anything
-  def test_live_connection        
+  def test_live_connection_with_start_session
     FreshBooks::Base.connection.start_session do
       clients = FreshBooks::Client.list("per_page" => 1)
       FreshBooks::Invoice.list("per_page" => 100).collect do |invoice|
@@ -18,5 +18,11 @@ class LiveConnectionTest < Test::Unit::TestCase
       end 
     end
   end
-
+  
+  def test_live_connection_without_start_session
+    clients = FreshBooks::Client.list("per_page" => 1)
+    FreshBooks::Invoice.list("per_page" => 100).collect do |invoice|
+      assert FreshBooks::Invoice.get(invoice.invoice_id)
+    end 
+  end
 end

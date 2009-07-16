@@ -101,7 +101,7 @@ module FreshBooks
         request[name.to_s] = value
       end
       
-      response = post_request(request)
+      result = post_request(request)
       
       if logger.debug?
         logger.debug "Request:"
