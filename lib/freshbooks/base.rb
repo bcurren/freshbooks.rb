@@ -122,7 +122,8 @@ module FreshBooks
       list_page_proc = proc do |page|
         options["page"] = page
         response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
-        raise FreshBooks::InternalError.new("Response was not successful. This should never happen.") unless response.success?
+        
+        raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
         
         root = response.elements[1]
         array = root.elements.map { |item| self.new_from_xml(item) }
