@@ -68,8 +68,8 @@ module FreshBooks
       doc.to_s
     end
     
-    def obtain_connection
-      return @connection if @connection
+    def obtain_connection(force = false)
+      return @connection if @connection && !force
       
       @connection = Net::HTTP.new(@account_url, 443)
       @connection.use_ssl = true
@@ -77,8 +77,17 @@ module FreshBooks
       @connection.start
     end
     
+    def reconnect
+      close
+      obtain_connection(true)
+    end
+    
     def close
-      @connection.finish if @connection
+      begin
+        @connection.finish if @connection
+      rescue => e
+        logger.error("Error closing connection: " + e.message)
+      end
       @connection = nil
     end
     
@@ -92,9 +101,7 @@ module FreshBooks
         request[name.to_s] = value
       end
       
-      start_session do |connection|
-        result = connection.request(request)
-      end
+      response = post_request(request)
       
       if logger.debug?
         logger.debug "Request:"
@@ -104,6 +111,24 @@ module FreshBooks
       end
       
       check_for_api_error(result)
+    end
+    
+    # For connections that take a long time, we catch EOFError's and reconnect seamlessly
+    def post_request(request)
+      response = nil
+      has_reconnected = false
+      start_session do |connection|
+        begin
+          response = connection.request(request)
+        rescue EOFError => e
+          raise e if has_reconnected
+          
+          has_reconnected = true
+          connection = reconnect
+          retry
+        end
+      end
+      response
     end
     
     def check_for_api_error(result)

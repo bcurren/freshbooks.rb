@@ -86,5 +86,60 @@ class TestConnection < Test::Unit::TestCase
     
     @connection.start_session { @connection.start_session { } }
   end
-
+  
+  def test_reconnect
+    connection = stub()
+    
+    @connection.expects(:close).with()
+    @connection.expects(:obtain_connection).with(true).returns(connection)
+    
+    assert_equal connection, @connection.send(:reconnect)
+  end
+  
+  def test_post_request_successfull_request
+    request = "<request></request>"
+    response = "<response></response>"
+    
+    http_connection = stub()
+    http_connection.expects(:request).with(request).returns(response)
+    @connection.expects(:start_session).with().yields(http_connection)
+    
+    assert_equal response, @connection.send(:post_request, request)
+  end
+  
+  def test_post_request_eof_error_retry
+    request = "<request></request>"
+    response = "<response></response>"
+    eof_error = EOFError.new("End of file error")
+    
+    bad_http_connection = stub()
+    bad_http_connection.expects(:request).with(request).raises(eof_error)
+    
+    new_http_connection = stub()
+    new_http_connection.expects(:request).with(request).returns(response)
+    
+    @connection.expects(:start_session).with().yields(bad_http_connection)
+    @connection.expects(:reconnect).with().returns(new_http_connection)
+    
+    assert_equal response, @connection.send(:post_request, request)
+  end
+  
+  def test_post_request_eof_error_retry_only_retry_once
+    request = "<request></request>"
+    response = "<response></response>"
+    eof_error = EOFError.new("End of file error")
+    
+    bad_http_connection = stub()
+    bad_http_connection.expects(:request).with(request).raises(eof_error)
+    
+    new_http_connection = stub()
+    new_http_connection.expects(:request).with(request).raises(eof_error)
+    
+    @connection.expects(:start_session).with().yields(bad_http_connection)
+    @connection.expects(:reconnect).with().returns(new_http_connection)
+    
+    assert_raises(EOFError, eof_error.message) do 
+      @connection.send(:post_request, request)
+    end
+  end
 end
