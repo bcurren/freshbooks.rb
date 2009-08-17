@@ -25,6 +25,9 @@
     <p_country>p_country1</p_country>
     <p_code>p_code1</p_code>
     
+    <return_uri>return_uri1</return_uri>
+    <updated>2009-08-1 01:00:00</updated>
+    
     <links>
       <client_view>client_view1</client_view>
       <view>view1</view>

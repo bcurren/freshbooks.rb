@@ -5,7 +5,7 @@ module FreshBooks
       s.fixnum :recurring_id, :read_only => true
       s.float :amount, :amount_outstanding, :discount, :paid
       s.date :date
-      # s.datetime :updated
+      s.date_time :updated
       s.array :lines
       s.object :links, :read_only => true
       s.string :number, :organization, :status, :notes, :terms, :first_name, :last_name

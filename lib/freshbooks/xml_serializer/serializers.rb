@@ -92,15 +92,17 @@ module FreshBooks
       end
     end
     
+    # FreshBooks datetimes are specified in gmt-4. This library assumes utc and
+    # will convert to the appropriate timezone.
     class DateTimeSerializer
       def self.to_node(member_name, value)
         element = REXML::Element.new(member_name)
-        element.text = value.to_s(:db)
+        element.text = (value.utc - 4.hours).to_s(:db) # hack to convert to gmt-4, any better way?
         element
       end
       
       def self.to_value(xml_val)
-        DateTime.parse(xml_val.text.to_s) 
+        DateTime.parse(xml_val.text.to_s + " -04:00").utc # hack to convert from gmt-4 to utc
       end
     end
   end

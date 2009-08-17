@@ -80,29 +80,32 @@ private
     assert_equal (number * 100) / 2, invoice.amount_outstanding
     assert_equal Date.parse("2009-02-0#{number}"), invoice.date
     
-    if expanded_form
-      assert_equal number, invoice.po_number
-      assert_equal number.to_f, invoice.discount
-      assert_equal "notes#{number}", invoice.notes
-      assert_equal "terms#{number}", invoice.terms
-      assert_equal "first_name#{number}", invoice.first_name
-      assert_equal "last_name#{number}", invoice.last_name
-      assert_equal "p_street1#{number}", invoice.p_street1
-      assert_equal "p_street2#{number}", invoice.p_street2
-      assert_equal "p_city#{number}", invoice.p_city
-      assert_equal "p_state#{number}", invoice.p_state
-      assert_equal "p_country#{number}", invoice.p_country
-      assert_equal "p_code#{number}", invoice.p_code
-      
-      assert_equal "client_view1", invoice.links.client_view
-      assert_equal "view1", invoice.links.view
-      assert_equal "edit1", invoice.links.edit
-      
-      lines = invoice.lines
-      assert_equal number, lines.size
-      lines.each_with_index do |line, index|
-        assert_line(line, index)
-      end
+    assert_equal number, invoice.po_number
+    assert_equal number.to_f, invoice.discount
+    assert_equal "notes#{number}", invoice.notes
+    assert_equal "terms#{number}", invoice.terms
+    assert_equal "first_name#{number}", invoice.first_name
+    assert_equal "last_name#{number}", invoice.last_name
+    assert_equal "p_street1#{number}", invoice.p_street1
+    assert_equal "p_street2#{number}", invoice.p_street2
+    assert_equal "p_city#{number}", invoice.p_city
+    assert_equal "p_state#{number}", invoice.p_state
+    assert_equal "p_country#{number}", invoice.p_country
+    assert_equal "p_code#{number}", invoice.p_code
+    
+    assert_equal "return_uri#{number}", invoice.return_uri
+    assert_equal DateTime.parse("2009-08-#{number} 0#{number}:00:00 -04:00"), invoice.updated
+    
+    
+    
+    assert_equal "client_view#{number}", invoice.links.client_view
+    assert_equal "view#{number}", invoice.links.view
+    assert_equal "edit#{number}", invoice.links.edit
+    
+    lines = invoice.lines
+    assert_equal 1, lines.size
+    lines.each_with_index do |line, index|
+      assert_line(line, index)
     end
   end
   

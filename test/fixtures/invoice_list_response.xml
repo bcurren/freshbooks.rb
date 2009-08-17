@@ -11,6 +11,47 @@
       <amount>100.00</amount>
       <amount_outstanding>50.00</amount_outstanding>
       <date>2009-02-01</date>
+      
+      <po_number>1</po_number>
+      <discount>1</discount>
+      <notes>notes1</notes>
+      <terms>terms1</terms>
+
+      <first_name>first_name1</first_name>
+      <last_name>last_name1</last_name>
+      <p_street1>p_street11</p_street1>
+      <p_street2>p_street21</p_street2>
+      <p_city>p_city1</p_city>
+      <p_state>p_state1</p_state>
+      <p_country>p_country1</p_country>
+      <p_code>p_code1</p_code>
+      
+      <return_uri>return_uri1</return_uri>
+      <updated>2009-08-1 01:00:00</updated>
+      
+      <links>
+        <client_view>client_view1</client_view>
+        <view>view1</view>
+        <edit>edit1</edit>
+      </links>
+
+      <lines>
+        <line>
+          <amount>1</amount>
+          <name>name1</name>
+          <description>description1</description>
+          <unit_cost>1</unit_cost>
+          <quantity>1</quantity>
+          <tax1_name>tax1_name1</tax1_name>
+          <tax2_name>tax2_name1</tax2_name>
+          <tax1_percent>1</tax1_percent>
+          <tax2_percent>1</tax2_percent>
+        </line>
+      </lines>
+
+      <url deprecated="true">https://sample.freshbooks.com/inv/12345-1-6d30b</url>
+      <auth_url deprecated="true">https://sample.freshbooks.com/inv/12345-1-6d30b-z</auth_url>
+      
     </invoice>
     <invoice>
       <invoice_id>2</invoice_id>
@@ -22,6 +63,47 @@
       <amount>200.00</amount>
       <amount_outstanding>100.00</amount_outstanding>
       <date>2009-02-02</date>
+
+      <po_number>2</po_number>
+      <discount>2</discount>
+      <notes>notes2</notes>
+      <terms>terms2</terms>
+
+      <first_name>first_name2</first_name>
+      <last_name>last_name2</last_name>
+      <p_street1>p_street12</p_street1>
+      <p_street2>p_street22</p_street2>
+      <p_city>p_city2</p_city>
+      <p_state>p_state2</p_state>
+      <p_country>p_country2</p_country>
+      <p_code>p_code2</p_code>
+
+      <return_uri>return_uri2</return_uri>
+      <updated>2009-08-2 02:00:00</updated>
+
+      <links>
+        <client_view>client_view2</client_view>
+        <view>view2</view>
+        <edit>edit2</edit>
+      </links>
+
+      <lines>
+        <line>
+          <amount>1</amount>
+          <name>name1</name>
+          <description>description1</description>
+          <unit_cost>1</unit_cost>
+          <quantity>1</quantity>
+          <tax1_name>tax1_name1</tax1_name>
+          <tax2_name>tax2_name1</tax2_name>
+          <tax1_percent>1</tax1_percent>
+          <tax2_percent>1</tax2_percent>
+        </line>
+      </lines>
+
+      <url deprecated="true">https://sample.freshbooks.com/inv/12345-1-6d30b</url>
+      <auth_url deprecated="true">https://sample.freshbooks.com/inv/12345-1-6d30b-z</auth_url>
+
     </invoice>
   </invoices>
 </response>

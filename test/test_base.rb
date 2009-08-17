@@ -46,7 +46,7 @@ class TestBase < Test::Unit::TestCase
     assert_equal 4.5, item.amount
     assert_equal true, item.visible
     assert_equal Date.new(2008, 2, 1), item.date
-    assert_equal DateTime.new(2008, 10, 22, 13, 57, 0), item.created_at
+    assert_equal DateTime.parse("2008-10-22 13:57:00 -04:00"), item.created_at
     assert_equal "street1", item.my_address.street1
     assert_equal 1, item.my_lines.size
     assert_equal "description", item.my_lines.first.description
