@@ -23,6 +23,16 @@ class TestListProxy < Test::Unit::TestCase
     assert_equal count, list_proxy.size
   end
   
+  def test_each__no_pages_and_items
+    list_proxy = FreshBooks::ListProxy.new(create_proc(0, 0, 0))
+    count = 0
+    list_proxy.each_with_index do |item, i|
+      count += 1
+    end
+    assert_equal 0, list_proxy.size
+    assert_equal 0, count
+  end
+  
 private 
   
   # Create a proc, the array generated will be sequential from 0 to total

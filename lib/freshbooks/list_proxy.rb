@@ -56,7 +56,10 @@ module FreshBooks
     end
     
     def pages
+      return 0 if per_page == 0
+      
       pages = total / per_page
+      
       if (total % per_page) != 0
         pages += 1
       end
