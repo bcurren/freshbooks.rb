@@ -127,7 +127,8 @@ module FreshBooks
         
         root = response.elements[1]
         array = root.elements.map { |item| self.new_from_xml(item) }
-        current_page = Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'])
+        
+        current_page = Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'], array.size)
         
         [array, current_page]
       end

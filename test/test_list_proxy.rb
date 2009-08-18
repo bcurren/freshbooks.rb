@@ -33,19 +33,28 @@ class TestListProxy < Test::Unit::TestCase
     assert_equal 0, count
   end
   
+  def test_each__response_doesnt_have_pagination_but_returns_items
+    list_proxy = FreshBooks::ListProxy.new(create_proc(0, 0, 0, 3))
+    count = 0
+    list_proxy.each_with_index do |item, i|
+      count += 1
+    end
+    assert_equal 3, list_proxy.size
+    assert_equal 3, count
+  end
+  
 private 
   
-  # Create a proc, the array generated will be sequential from 0 to total
-  def create_proc(page, per_page, total)
+  def create_proc(page, per_page, total, total_in_array = total)
     get_page_proc = proc do |page|
       start_num = (page - 1) * per_page
       end_num = start_num + per_page
-      if end_num >= total
-        end_num = total
+      if end_num >= total_in_array || end_num == 0
+        end_num = total_in_array
       end
       
       array = Range.new(start_num, end_num, true).to_a
-      [array, FreshBooks::Page.new(page, per_page, total)]
+      [array, FreshBooks::Page.new(page, per_page, total, total_in_array)]
     end
   end
 end

@@ -39,10 +39,17 @@ module FreshBooks
   class Page
     attr_reader :page, :per_page, :total
     
-    def initialize(page, per_page, total)
+    def initialize(page, per_page, total, total_in_array = total)
       @page = page.to_i
       @per_page = per_page.to_i
       @total = total.to_i
+      
+      # Detect if response has pagination
+      if @per_page == 0 && @total == 0 && total_in_array != 0
+        # No pagination so fake it
+        @page = 1
+        @per_page = @total = total_in_array
+      end
     end
     
     # Get the page number that this element is on given the number of elements per page
