@@ -3,7 +3,8 @@ module FreshBooks
     define_schema do |s|
       s.fixnum :invoice_id, :client_id, :po_number
       s.fixnum :recurring_id, :read_only => true
-      s.float :amount, :amount_outstanding, :discount, :paid
+      s.float :amount, :discount
+      s.float :amount_outstanding, :paid, :read_only => true
       s.date :date
       s.date_time :updated
       s.array :lines
