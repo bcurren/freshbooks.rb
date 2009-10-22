@@ -6,7 +6,7 @@ module FreshBooks
       s.float :amount, :discount
       s.float :amount_outstanding, :paid, :read_only => true
       s.date :date
-      s.date_time :updated
+      s.date_time :updated, :read_only => true
       s.array :lines
       s.object :links, :read_only => true
       s.string :number, :organization, :status, :notes, :terms, :first_name, :last_name
