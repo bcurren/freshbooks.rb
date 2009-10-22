@@ -36,8 +36,7 @@ module FreshBooks
           Date.parse(xml_val.text.to_s) 
         rescue ArgumentError => e
           # Sometimes freshbooks gives dates that look like this 0000-00-00 00:00:00
-          # just default to todays date, you have any other suggestions?
-          Date.new
+          nil
         end
       end
     end
@@ -103,6 +102,9 @@ module FreshBooks
       
       def self.to_value(xml_val)
         DateTime.parse(xml_val.text.to_s + " -04:00").utc # hack to convert from gmt-4 to utc
+      rescue ArgumentError => e
+        # Sometimes freshbooks gives dates that look like this 0000-00-00 00:00:00
+        nil
       end
     end
   end
