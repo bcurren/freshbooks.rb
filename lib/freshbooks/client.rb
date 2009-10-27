@@ -6,7 +6,7 @@ module FreshBooks
       s.string :mobile, :fax, :notes, :p_street1, :p_street2, :p_city
       s.string :p_state, :p_country, :p_code, :s_street1, :s_street2
       s.string :s_city, :s_state, :s_country, :s_code
-      s.float :credit
+      s.float :credit, :read_only => true
       s.date_time :updated, :read_only => true
       s.fixnum :client_id
       s.object :links, :read_only => true
