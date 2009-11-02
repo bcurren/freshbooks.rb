@@ -96,15 +96,20 @@ module FreshBooks
     class DateTimeSerializer
       def self.to_node(member_name, value)
         element = REXML::Element.new(member_name)
-        element.text = (value.utc - 4.hours).to_s(:db) # hack to convert to gmt-4, any better way?
+        element.text = (value.utc + time_offset.to_i.hours).to_s(:db) # hack to convert to gmt-4, any better way?
         element
       end
       
       def self.to_value(xml_val)
-        DateTime.parse(xml_val.text.to_s + " -04:00").utc # hack to convert from gmt-4 to utc
+        DateTime.parse(xml_val.text.to_s + " #{time_offset}").utc # hack to convert from gmt-4 to utc
       rescue ArgumentError => e
         # Sometimes freshbooks gives dates that look like this 0000-00-00 00:00:00
         nil
+      end
+      
+    private
+      def self.time_offset
+        ENV['FRESHBOOKS_TIMEZONE'] || "-04:00"
       end
     end
   end
