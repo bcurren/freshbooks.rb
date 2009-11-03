@@ -8,6 +8,6 @@ module FreshBooks
       s.string :type, :notes
     end
     
-    actions :list, :get, :create, :update
+    actions :list, :get, :create, :update, :delete
   end
 end
