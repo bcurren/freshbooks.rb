@@ -32,6 +32,11 @@ module FreshBooks
       Response.new(result)
     end
     
+    def direct_post(xml)
+      result = post(xml)
+      Response.new(result)
+    end
+    
     def start_session(&block)
       @connection = obtain_connection if @start_session_count == 0
       @start_session_count = @start_session_count + 1
