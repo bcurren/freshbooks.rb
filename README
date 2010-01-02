@@ -35,8 +35,7 @@ This work is distributed under the MIT License. Use/modify the code however you 
 
 = Download
 
-gem sources -a http://gems.github.com
-sudo gem install bcurren-freshbooks.rb
+sudo gem install tedkulp-freshbooks.rb
 
 = Credits
 
