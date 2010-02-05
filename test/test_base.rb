@@ -66,6 +66,36 @@ class TestBase < Test::Unit::TestCase
     assert xml_out.include?("<my_lines><my_line><description>description</description></my_line></my_lines>")
   end
   
+  def test_create_objects_with_initializer_arguments
+    invoice_1 = FreshBooks::Invoice.new
+    invoice_1.client_id = 1
+    invoice_1.lines = [FreshBooks::Line.new, FreshBooks::Line.new]
+    invoice_1.lines[0].name = "Awesomeness"
+    invoice_1.lines[0].unit_cost = 9999
+    invoice_1.lines[0].quantity = 42
+    invoice_1.lines[1].name = "Ninja skills"
+    invoice_1.lines[1].unit_cost = 349
+    invoice_1.lines[1].quantity = 100
+    
+    invoice_2 = FreshBooks::Invoice.new(
+      :client_id => 1,
+      :lines => [
+        FreshBooks::Line.new(
+          :name => "Awesomeness",
+          :unit_cost => 9999,
+          :quantity => 42
+        ),
+        FreshBooks::Line.new(
+          :name => "Ninja skills",
+          :unit_cost => 349,
+          :quantity => 100
+        )
+      ]
+    )
+    
+    assert_equal invoice_1.to_xml, invoice_2.to_xml
+  end
+  
 end
 
 module FreshBooks

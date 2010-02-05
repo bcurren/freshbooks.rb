@@ -1,5 +1,8 @@
 module FreshBooks
   class Invoice < FreshBooks::Base
+    
+    
+    
     define_schema do |s|
       s.fixnum :invoice_id, :client_id, :po_number
       s.fixnum :recurring_id, :read_only => true

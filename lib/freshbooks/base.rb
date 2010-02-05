@@ -5,6 +5,10 @@ module FreshBooks
   class Base
     include FreshBooks::Schema::Mixin
     
+    def initialize(args = {})
+      args.each_pair {|k, v| send("#{k}=", v)}
+    end
+    
     @@connection = nil
     def self.connection
       @@connection
