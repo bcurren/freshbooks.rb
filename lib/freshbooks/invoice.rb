@@ -9,7 +9,7 @@ module FreshBooks
       s.date_time :updated, :read_only => true
       s.array :lines
       s.object :links, :read_only => true
-      s.string :number, :organization, :status, :notes, :terms, :first_name, :last_name
+      s.string :number, :organization, :status, :notes, :terms, :first_name, :last_name, :currency_code
       s.string :p_street1, :p_street2, :p_city, :p_state, :p_country, :p_code
       s.string :return_uri
     end
