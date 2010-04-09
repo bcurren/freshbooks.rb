@@ -8,6 +8,7 @@ module FreshBooks
       s.float :discount, :amount
       s.array :lines
       s.boolean :stopped, :send_email, :send_snail_mail
+      s.string :return_uri
     end
     
     actions :list, :get, :create, :update, :delete
