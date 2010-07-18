@@ -1,3 +1,18 @@
+= Todo
+
+Please send me a message if you are interested in contributing. Here is a quick overview of some things I'd like to add to the gem.
+
+Merge in forked versions of this gem (any idea what forks are worth while?)
+Provide a way to retrieve the error message with actions beside list are called.
+Make ListProxy optional on list actions. Some people have valid reason to deal with pagination.
+Add oAuth
+Add webhooks
+More tests including integration tests
+Write some documentation and examples
+Launch an official 3.0 (maybe call it 4.0) version of the gem
+Post the official version to rubygems
+Ensure rubygems aren't required for this gem. 
+
 = About
 
 FreshBooks.rb is a Ruby interface to the FreshBooks API. It exposes easy-to-use classes and methods for interacting with your FreshBooks account.
