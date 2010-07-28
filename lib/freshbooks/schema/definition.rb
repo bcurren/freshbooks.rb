@@ -4,7 +4,7 @@ module FreshBooks
       attr_reader :members
       
       def initialize
-        @members = {}
+        @members = ActiveSupport::OrderedHash.new
       end
       
       def method_missing(method, *attributes)
