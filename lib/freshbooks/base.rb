@@ -22,7 +22,7 @@ module FreshBooks
       object = self.new()
       
       self.schema_definition.members.each do |member_name, member_options|
-        node = xml_root.elements["//#{member_name}"]
+        node = xml_root.elements[member_name.dup]
         next if node.nil?
         
         value = FreshBooks::XmlSerializer.to_value(node, member_options[:type])
