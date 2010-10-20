@@ -66,6 +66,22 @@ class TestBase < Test::Unit::TestCase
     assert xml_out.include?("<my_lines><my_line><description>description</description></my_line></my_lines>")
   end
   
+  def test_can_handle_all_zero_updated_at
+    xml = <<-END_XML
+      <my_client> 
+        <client_id>3</client_id> 
+        <first_name>Test</first_name> 
+        <last_name>User</last_name> 
+        <organization>User Testing</organization> 
+        <updated>0000-00-00 00:00:00</updated> 
+      </my_client>
+    END_XML
+    doc = REXML::Document.new(xml)
+    
+    item = FreshBooks::MyClient.new_from_xml(doc.root)
+    assert_equal nil, item.updated
+  end
+  
 end
 
 module FreshBooks
@@ -80,6 +96,14 @@ module FreshBooks
       s.date_time :created_at
       s.object :my_address
       s.array :my_lines
+    end
+  end
+
+  class MyClient < FreshBooks::Base
+    define_schema do |s|
+      s.string :first_name, :last_name, :organization
+      s.fixnum :client_id
+      s.date_time :updated
     end
   end
 
