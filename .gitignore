@@ -1,2 +1,3 @@
 test/live_test.rb
 test/fixtures/freshbooks_credentials.yml
+*.gem

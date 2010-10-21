@@ -8,6 +8,7 @@ rescue LoadError
   gem 'activesupport'
   require 'active_support'
 end
+require 'active_support/all'
 
 require 'freshbooks/base'
 require 'freshbooks/category'
@@ -60,7 +61,7 @@ require 'logger'
 #
 #==============================================================================
 module FreshBooks
-  VERSION = '3.0.13'     # Gem version
+  VERSION = '3.0.24'     # Gem version
   API_VERSION = '2.1' # FreshBooks API version
   SERVICE_URL = "/api/#{API_VERSION}/xml-in"
 

@@ -5,6 +5,10 @@ module FreshBooks
   class Base
     include FreshBooks::Schema::Mixin
     
+    def initialize(args = {})
+      args.each_pair {|k, v| send("#{k}=", v)}
+    end
+    
     @@connection = nil
     def self.connection
       @@connection
@@ -15,10 +19,10 @@ module FreshBooks
     end
     
     def self.new_from_xml(xml_root)
-      object = self.new
+      object = self.new()
       
       self.schema_definition.members.each do |member_name, member_options|
-        node = xml_root.elements[member_name]
+        node = xml_root.elements[member_name.dup]
         next if node.nil?
         
         value = FreshBooks::XmlSerializer.to_value(node, member_options[:type])
@@ -28,7 +32,10 @@ module FreshBooks
       return object
       
     rescue => e
-      raise ParseError.new(e, xml_root.to_s)
+      error = ParseError.new(e, xml_root.to_s)
+      error.set_backtrace(e.backtrace)
+      raise error
+      # raise ParseError.new(e, xml_root.to_s)
     end
     
     def to_xml(elem_name = nil)
