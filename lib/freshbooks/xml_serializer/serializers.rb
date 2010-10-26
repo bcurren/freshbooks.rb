@@ -102,6 +102,7 @@ module FreshBooks
       end
       
       def self.to_value(xml_val)
+        return nil if xml_val.text.to_s == "0000-00-00 00:00:00"
         DateTime.parse(xml_val.text.to_s + " -04:00").utc # hack to convert from gmt-4 to utc
       end
     end

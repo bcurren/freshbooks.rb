@@ -66,6 +66,26 @@ class TestBase < Test::Unit::TestCase
     assert xml_out.include?("<my_lines><my_line><description>description</description></my_line></my_lines>")
   end
   
+  def test_will_parse_xml_with_all_zero_datetime
+    xml = <<-EOS
+      <payment>
+        <payment_id>3507</payment_id>
+        <invoice_id>00000006457</invoice_id>
+        <date>2009-07-18 00:00:00</date>
+        <type>VISA</type>
+        <notes/>
+        <client_id>3313</client_id>
+        <amount>300</amount>
+        <updated>0000-00-00 00:00:00</updated>
+      </payment>
+    EOS
+  
+    doc = REXML::Document.new(xml)
+  
+    assert_nothing_raised do 
+      item = FreshBooks::PaymentItem.new_from_xml(doc.root)
+    end
+  end
 end
 
 module FreshBooks
@@ -80,6 +100,19 @@ module FreshBooks
       s.date_time :created_at
       s.object :my_address
       s.array :my_lines
+    end
+  end
+
+  class PaymentItem < FreshBooks::Base
+    define_schema do |s|
+      s.fixnum :payment_id
+      s.fixnum :client_id
+      s.string :invoice_id
+      s.string :notes
+      s.float :amount
+      s.date_time :updated
+      s.date_time :date
+      s.string :type
     end
   end
 

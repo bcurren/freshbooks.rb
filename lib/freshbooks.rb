@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 begin
   require 'active_support'
+  require 'active_support/all'
 rescue LoadError
   require 'rubygems'
   gem 'activesupport'
