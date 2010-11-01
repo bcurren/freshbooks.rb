@@ -6,13 +6,13 @@ module FreshBooks
   class Connection
     attr_reader :account_url, :auth_token, :request_headers
     
-    @@logger = Logger.new(STDOUT)
+    Thread.current['logger'] = Logger.new(STDOUT)
     def logger
-      @@logger
+      Thread.current['logger']
     end
 
     def self.log_level=(level)
-      @@logger.level = level
+      Thread.current['logger'].level = level
     end
     self.log_level = Logger::WARN
     
