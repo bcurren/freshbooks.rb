@@ -5,13 +5,13 @@ module FreshBooks
   class Base
     include FreshBooks::Schema::Mixin
     
-    @@connection = nil
+    Thread.current["connection"] = nil
     def self.connection
-      @@connection
+      Thread.current["connection"]
     end
     
     def self.establish_connection(account_url, auth_token, request_headers = {})
-      @@connection = Connection.new(account_url, auth_token, request_headers)
+      Thread.current["connection"] = Connection.new(account_url, auth_token, request_headers)
     end
     
     def self.new_from_xml(xml_root)
