@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'test/unit'
 
 begin
   require 'mocha'
@@ -12,7 +13,6 @@ rescue LoadError
 end
 
 require 'stringio'
-require 'test/unit'
 require 'fakeweb'
 require File.dirname(__FILE__) + '/../lib/freshbooks'
 
