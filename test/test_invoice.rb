@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestInvoice < Test::Unit::TestCase
   def test_list
-    mock_call_api("invoice.list", { "page" => 1 }, "invoice_list_response")
+    mock_api_response("invoice_list_response")
     
     invoices = FreshBooks::Invoice.list
     assert_equal 3, invoices.size
@@ -12,7 +12,7 @@ class TestInvoice < Test::Unit::TestCase
   
   def test_get
     invoice_id = 2
-    mock_call_api("invoice.get", { "invoice_id" => invoice_id }, "invoice_get_response")
+    mock_api_response("invoice_get_response")
     
     invoice = FreshBooks::Invoice.get(invoice_id)
     assert_invoice invoice, 0, true
@@ -22,7 +22,7 @@ class TestInvoice < Test::Unit::TestCase
     invoice = FreshBooks::Invoice.new
     assert_nil invoice.invoice_id
     
-    mock_call_api("invoice.create", { "invoice" => invoice }, "invoice_create_response")
+    mock_api_response("invoice_create_response")
     assert invoice.create
     assert_equal 1, invoice.invoice_id
   end
@@ -31,14 +31,14 @@ class TestInvoice < Test::Unit::TestCase
     invoice = FreshBooks::Invoice.new
     invoice.invoice_id = 1
     
-    mock_call_api("invoice.update", { "invoice" => invoice }, "success_response")
+    mock_api_response("success_response")
     assert invoice.update
   end
   
   def test_delete
     invoice = FreshBooks::Invoice.new
     invoice.invoice_id = 2
-    mock_call_api("invoice.delete", { "invoice_id" => invoice.invoice_id }, "success_response")
+    mock_api_response("success_response")
     
     assert invoice.delete
   end
@@ -46,7 +46,7 @@ class TestInvoice < Test::Unit::TestCase
   def test_send_by_email
     invoice = FreshBooks::Invoice.new
     invoice.invoice_id = 2
-    mock_call_api("invoice.sendByEmail", { "invoice_id" => invoice.invoice_id }, "success_response")
+    mock_api_response("success_response")
     
     assert invoice.send_by_email
   end
@@ -54,19 +54,12 @@ class TestInvoice < Test::Unit::TestCase
   def test_send_by_snail_mail
     invoice = FreshBooks::Invoice.new
     invoice.invoice_id = 2
-    mock_call_api("invoice.sendBySnailMail", { "invoice_id" => invoice.invoice_id }, "success_response")
+    mock_api_response("success_response")
     
     assert invoice.send_by_snail_mail
   end
   
 private
-  
-  def mock_call_api(method, options, response_fixture)
-    FreshBooks::Base.connection.
-      expects(:call_api).
-      with(method, options).
-      returns(FreshBooks::Response.new(fixture_xml_content(response_fixture)))
-  end
   
   def assert_invoice(invoice, number, expanded_form = false)
     number = number + 1

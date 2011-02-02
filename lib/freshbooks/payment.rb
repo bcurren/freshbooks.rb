@@ -5,9 +5,9 @@ module FreshBooks
       s.float :amount
       s.date :date
       s.date_time :updated
-      s.string :type, :notes
+      s.string :type, :notes, :currency_code
     end
     
-    actions :list, :get, :create, :update
+    actions :list, :get, :create, :update, :delete
   end
 end

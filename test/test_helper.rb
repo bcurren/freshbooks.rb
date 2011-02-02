@@ -1,16 +1,20 @@
-require File.dirname(__FILE__) + '/../lib/freshbooks'
-
-require 'stringio'
-require 'test/unit'
-require File.dirname(__FILE__) + '/mock_connection'
+require 'rubygems'
 
 begin
   require 'mocha'
+  require 'activesupport'
 rescue LoadError
   require 'rubygems'
   gem 'mocha'
   require 'mocha'
+  gem 'activesupport'
+  require 'active_support'
 end
+
+require 'stringio'
+require 'test/unit'
+require 'fakeweb'
+require File.dirname(__FILE__) + '/../lib/freshbooks'
 
 class Test::Unit::TestCase
   
@@ -28,13 +32,12 @@ class Test::Unit::TestCase
     end
   end
   
-  
-  def mock_connection(file_name)
-    mock_connection = MockConnection.new(fixture_xml_content(file_name))
-    FreshBooks::Base.stubs(:connection).with().returns(mock_connection)
-    mock_connection
+  def mock_api_response(response_fixture)
+    FakeWeb.allow_net_connect = false
+    FreshBooks::Base.establish_connection('company.freshbooks.com', 'auth_token')
+    FakeWeb.register_uri(:any, "https://auth_token:X@company.freshbooks.com/api/2.1/xml-in", :body => File.read(File.dirname(__FILE__) + "/fixtures/#{response_fixture}.xml"))
   end
-  
+    
   def fixture_xml_content(file_name)
     # Quick way to remove white space and newlines from xml. Makes it easier to compare in tests
     open(File.join(fixture_dir, "#{file_name}.xml"), "r").readlines.inject("") do |contents, line|

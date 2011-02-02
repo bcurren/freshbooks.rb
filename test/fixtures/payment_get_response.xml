@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<response xmlns="http://www.freshbooks.com/api/" status="ok">  
+  <payment>  
+    <payment_id>1</payment_id>  
+    <client_id>1</client_id>  
+    <invoice_id>1</invoice_id>  
+    <date>2011-01-01</date>  
+    <amount>100</amount>  
+    <currency_code>currency_code1</currency_code> <!-- Only returned for credits -->  
+    <type>type1</type>  
+    <notes>notes1</notes>  
+    <updated>2011-01-01 00:00:00</updated> <!-- (Read-only) -->  
+  </payment>  
+</response>  

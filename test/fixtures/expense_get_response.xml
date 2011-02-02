@@ -1,0 +1,24 @@
+<?xml version="1.0"?>  
+<response xmlns="http://www.freshbooks.com/api/" status="ok">  
+  <expense>  
+  
+  <expense_id>1</expense_id>  
+  <staff_id>1</staff_id>  
+  <category_id>1</category_id>  
+  <project_id>1</project_id>  
+  <client_id>1</client_id>  
+  <amount>100</amount>  
+  <date>2011-01-01</date>  
+  <notes>notes1</notes>  
+  <folder>folder1</folder>  
+  <vendor>vendor1</vendor>  
+  <status>status1</status>   
+  <tax1_name>tax1_name1</tax1_name>  
+  <tax1_percent>tax1_percent1</tax1_percent>  
+  <tax1_amount>tax1_amount1</tax1_amount>  
+  <tax2_name>tax2_name1</tax2_name>  
+  <tax2_percent>tax2_percent1</tax2_percent>  
+  <tax2_amount>tax2_amount1</tax2_amount>  
+  
+  </expense>  
+</response>  

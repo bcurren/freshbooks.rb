@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<response xmlns="http://www.freshbooks.com/api/" status="ok">  
+  <payment_id>103</payment_id>  
+</response>  
