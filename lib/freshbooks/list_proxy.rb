@@ -16,8 +16,17 @@ module FreshBooks
     end
     
     def [](position)
-      move_to_page(@current_page.page_number(position))
-      @array[@current_page.position_number(position)]
+      if position.kind_of?(Range)
+        items = []
+        position.each do |p|
+          move_to_page(@current_page.page_number(p))
+          items << @array[@current_page.position_number(p)]
+        end
+        return items
+      else
+        move_to_page(@current_page.page_number(position))
+        return @array[@current_page.position_number(position)]
+      end
     end
     
     def size

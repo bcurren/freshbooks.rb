@@ -13,6 +13,11 @@ class TestListProxy < Test::Unit::TestCase
     assert_equal 2, list_proxy[2]
   end
   
+  def test_reference_range
+    list_proxy = FreshBooks::ListProxy.new(create_proc(1, 2, 3))
+    assert_equal [0,1,2], list_proxy[0..2]
+  end
+  
   def test_each
     list_proxy = FreshBooks::ListProxy.new(create_proc(1, 2, 3))
     count = 0
