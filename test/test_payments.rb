@@ -7,7 +7,6 @@ class TestPayments < Test::Unit::TestCase
     payments = FreshBooks::Payment.list
     assert_equal 221, payments.size
     assert_payment payments[0], 0
-    assert_payment payments[1], 1
   end
   
   def test_get

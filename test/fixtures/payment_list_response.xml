@@ -4,13 +4,13 @@
     <payment>  
       <payment_id>1</payment_id>  
       <invoice_id>1</invoice_id>  
-      <date>2011-01-01 12:04:11</date>  
-      <type>Cash</type>  
-      <notes></notes>  
-      <client_id>43</client_id>  
-      <currency_code>CAD</currency_code> <!-- Only returned for credits -->  
-      <updated>2009-08-12 09:00:00</updated>  
-      <amount>301.21</amount>  
+      <date>2011-01-01</date>  
+      <type>type1</type>  
+      <notes>notes1</notes>  
+      <client_id>1</client_id>  
+      <currency_code>currency_code1</currency_code> <!-- Only returned for credits -->  
+      <updated>2011-01-01 00:00:00</updated>  
+      <amount>100</amount>  
     </payment>  
     ...  
   </payments>  

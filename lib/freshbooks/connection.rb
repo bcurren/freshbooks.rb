@@ -50,21 +50,18 @@ module FreshBooks
       doc = REXML::Document.new '<?xml version="1.0" encoding="UTF-8"?>'
       request = doc.add_element('request')
       request.attributes['method'] = method
-      
       elements.each do |element|
         if element.kind_of?(Hash)
           element = element.to_a
         end
         key = element.first
         value = element.last
-        
         if value.kind_of?(Base)
           request.add_element(REXML::Document.new(value.to_xml))
         else
           request.add_element(REXML::Element.new(key.to_s)).text = value.to_s
         end
       end
-      
       doc.to_s
     end
     
@@ -102,7 +99,7 @@ module FreshBooks
       end
       
       result = post_request(request)
-      
+
       if logger.debug?
         logger.debug "Request:"
         logger.debug request_body
