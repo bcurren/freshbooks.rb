@@ -35,13 +35,11 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<newgem>, [">= 1.2.3"])
       s.add_dependency(%q<mocha>, [">= 0.9.4"])
       s.add_dependency(%q<hoe>, [">= 1.8.0"])
-      s.add_dependency(%q<fakeweb>, [">= 1.8.0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<newgem>, [">= 1.2.3"])
     s.add_dependency(%q<mocha>, [">= 0.9.4"])
     s.add_dependency(%q<hoe>, [">= 1.8.0"])
-    s.add_dependency(%q<fakeweb>, [">= 1.8.0"])
   end
 end

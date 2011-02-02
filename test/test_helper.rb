@@ -37,14 +37,7 @@ class Test::Unit::TestCase
     FreshBooks::Base.establish_connection('company.freshbooks.com', 'auth_token')
     FakeWeb.register_uri(:any, "https://auth_token:X@company.freshbooks.com/api/2.1/xml-in", :body => File.read(File.dirname(__FILE__) + "/fixtures/#{response_fixture}.xml"))
   end
-    
-  def fixture_xml_content(file_name)
-    # Quick way to remove white space and newlines from xml. Makes it easier to compare in tests
-    open(File.join(fixture_dir, "#{file_name}.xml"), "r").readlines.inject("") do |contents, line|
-      contents + line.strip
-    end
-  end
-  
+      
   def fixture_dir
     File.join(File.dirname(__FILE__), "fixtures")
   end
