@@ -24,3 +24,17 @@ Dir['tasks/**/*.rake'].each { |t| load t }
 
 # TODO - want other tests/tasks run by default? Add them to the list
 # task :default => [:spec, :features]
+
+
+# %w[bundler rake rake/testtask active_support mocha].each { |f| require f }
+# Bundler::GemHelper.install_tasks
+# 
+# task :default => [:test_units]
+# desc "Run basic tests"
+# Rake::TestTask.new("test_units") { |t|
+#   t.pattern = 'test/test_*.rb'
+#   t.verbose = true
+#   t.warning = true
+# }
+# 
+# require File.dirname(__FILE__) + '/lib/freshbooks'
