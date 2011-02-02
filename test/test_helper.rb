@@ -3,7 +3,7 @@ require 'test/unit'
 
 begin
   require 'mocha'
-  require 'activesupport'
+  require 'active_support'
 rescue LoadError
   require 'rubygems'
   gem 'mocha'
