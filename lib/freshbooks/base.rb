@@ -5,15 +5,17 @@ module FreshBooks
   class Base
     include FreshBooks::Schema::Mixin
     
+    attr_accessor :error
+    
     Thread.current["connection"] = nil
     def self.connection
       Thread.current["connection"]
     end
     
-    def self.establish_connection(account_url, auth_token, request_headers = {})
-      Thread.current["connection"] = Connection.new(account_url, auth_token, request_headers)
+    def self.establish_connection(account_url, auth_credentials, request_headers = {})
+      Thread.current["connection"] = Connection.new(account_url, auth_credentials, request_headers)
     end
-    
+        
     def self.new_from_xml(xml_root)
       object = self.new
       

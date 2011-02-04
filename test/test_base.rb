@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
+require 'base64'
 
 class TestBase < Test::Unit::TestCase
   def test_establish_connection
@@ -8,13 +9,32 @@ class TestBase < Test::Unit::TestCase
     connection = FreshBooks::Base.connection
     assert_not_nil connection
     assert_equal "company.freshbooks.com", connection.account_url
-    assert_equal "auth_token", connection.auth_token
+    assert_equal "Basic YXV0aF90b2tlbjpY", connection.auth_token
+    assert_equal FreshBooks::BasicAuth, connection.auth.class
     
     FreshBooks::Base.establish_connection("company2.freshbooks.com", "auth_token2")
     connection = FreshBooks::Base.connection
     assert_not_nil connection
     assert_equal "company2.freshbooks.com", connection.account_url
-    assert_equal "auth_token2", connection.auth_token
+    assert_equal "Basic YXV0aF90b2tlbjI6WA==", connection.auth_token
+    assert_equal FreshBooks::BasicAuth, connection.auth.class
+    
+    FreshBooks::OAuth.any_instance.stubs(:nonce).returns("nonce")
+    FreshBooks::OAuth.any_instance.stubs(:timestamp).returns("timestamp")
+    FreshBooks::Base.establish_connection("company.freshbooks.com", {"consumer_key"=>"consumer_key", "consumer_secret"=>"consumer_secret", "token"=>"token", "token_secret"=>"token_secret"})
+    connection = FreshBooks::Base.connection
+    assert_not_nil connection
+    assert_equal "company.freshbooks.com", connection.account_url
+    assert_equal 'OAuth realm="",oauth_signature_method="PLAINTEXT",oauth_version="1.0",oauth_signature="consumer_secret%26token_secret",oauth_consumer_key="consumer_key",oauth_token="token",oauth_timestamp="timestamp",oauth_nonce="nonce"', connection.auth_token
+    assert_equal FreshBooks::OAuth, connection.auth.class
+    
+    FreshBooks::Base.establish_connection("company2.freshbooks.com", {"consumer_key"=>"consumer_key2", "consumer_secret"=>"consumer_secret2", "token"=>"token2", "token_secret"=>"token_secret2"})
+    connection = FreshBooks::Base.connection
+    assert_not_nil connection
+    assert_equal "company2.freshbooks.com", connection.account_url
+    assert_equal 'OAuth realm="",oauth_signature_method="PLAINTEXT",oauth_version="1.0",oauth_signature="consumer_secret2%26token_secret2",oauth_consumer_key="consumer_key2",oauth_token="token2",oauth_timestamp="timestamp",oauth_nonce="nonce"', connection.auth_token
+    assert_equal FreshBooks::OAuth, connection.auth.class
+    
   end
   
   def test_new_from_xml_to_xml__round_trip

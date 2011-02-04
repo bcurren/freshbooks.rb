@@ -7,7 +7,7 @@ class TestConnection < Test::Unit::TestCase
   
   def test_connection_accessors
     assert_equal "company.freshbooks.com", @connection.account_url
-    assert_equal "auth_token", @connection.auth_token
+    assert_equal "Basic YXV0aF90b2tlbjpY", @connection.auth_token
   end
   
   def test_connection_request_headers

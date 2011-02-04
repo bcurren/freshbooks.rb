@@ -1,10 +1,12 @@
 require 'net/https'
 require 'rexml/document'
 require 'logger'
+require 'base64'
+require 'cgi'
 
 module FreshBooks
   class Connection
-    attr_reader :account_url, :auth_token, :request_headers
+    attr_reader :account_url, :auth, :auth_token, :request_headers
     
     @@logger = Logger.new(STDOUT)
     def logger
@@ -16,16 +18,20 @@ module FreshBooks
     end
     self.log_level = Logger::WARN
     
-    def initialize(account_url, auth_token, request_headers = {})
+    def initialize(account_url, auth_credentials, request_headers={})
       raise InvalidAccountUrlError.new unless account_url =~ /^[0-9a-zA-Z\-_]+\.freshbooks\.com$/
+      if auth_credentials.kind_of?(Hash) # OAuth
+        @auth = OAuth.new(auth_credentials)
+      else
+        @auth = BasicAuth.new(auth_credentials)
+      end
       
-      @account_url = account_url
-      @auth_token = auth_token
+      @auth_token = @auth.auth["Authorization"]
+      @account_url =  account_url
       @request_headers = request_headers
-      
       @start_session_count = 0
     end
-    
+
     def call_api(method, elements = [])
       request = create_request(method, elements)
       result = post(request)
@@ -88,10 +94,12 @@ module FreshBooks
       @connection = nil
     end
     
+    
     def post(request_body)
       result = nil
       request = Net::HTTP::Post.new(FreshBooks::SERVICE_URL)
-      request.basic_auth @auth_token, 'X'
+      
+      request["Authorization"] = @auth.auth['Authorization']
       request.body = request_body
       request.content_type = 'application/xml'
       @request_headers.each_pair do |name, value|
@@ -146,5 +154,44 @@ module FreshBooks
       
       raise InternalError.new("Invalid HTTP code: #{result.class}")
     end
+  end  
+  
+  class BasicAuth
+    def initialize(auth_token)      
+      @auth_token = auth_token
+    end
+    
+    def auth
+      {'Authorization' => "Basic #{Base64.encode64("#{@auth_token}:X")}".strip}
+    end
   end
+  
+  class OAuth
+    def initialize(auth_credentials)
+      @consumer_key    = auth_credentials['consumer_key']
+      @consumer_secret = auth_credentials['consumer_secret']
+      @token           = auth_credentials['token']
+      @token_secret    = auth_credentials['token_secret']
+    end
+
+    def auth
+      data = "realm=\"\",oauth_signature_method=\"PLAINTEXT\",oauth_version=\"1.0\",oauth_signature=\"#{signature}\",oauth_consumer_key=\"#{@consumer_key}\",oauth_token=\"#{@token}\",oauth_timestamp=\"#{timestamp}\",oauth_nonce=\"#{nonce}\""      
+
+      { 'Authorization' => "OAuth #{data}" }
+    end
+
+    def signature
+      CGI.escape("#{@consumer_secret}&#{@token_secret}")
+    end
+
+    def nonce
+      [OpenSSL::Random.random_bytes(10)].pack('m').gsub(/\W/, '')
+    end
+
+    def timestamp
+      Time.now.to_i
+    end
+
+  end
+  
 end

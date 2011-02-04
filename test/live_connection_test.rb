@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
+require 'base64'
 
 # this tests a live conection
 class LiveConnectionTest < Test::Unit::TestCase
@@ -43,6 +44,8 @@ class LiveConnectionTest < Test::Unit::TestCase
   def test_invoice
     size_of_invoice_list = FreshBooks::Invoice.list("per_page" => 100).size
     invoice = FreshBooks::Invoice.new
+    assert !invoice.create
+    assert !invoice.error.nil?
     invoice.client_id = @client.client_id
     assert invoice.create
     assert FreshBooks::Invoice.list("per_page" => 100).size == size_of_invoice_list + 1
@@ -57,7 +60,9 @@ class LiveConnectionTest < Test::Unit::TestCase
   def test_expense
     size_of_expense_list = FreshBooks::Expense.list("per_page" => 100).size
     expense = FreshBooks::Expense.new
-    staff = FreshBooks::Staff.list("per_page" => 1).first
+    assert !expense.create
+    assert !expense.error.empty?
+    staff = FreshBooks::Staff.list("per_page" => 1)[0]
     expense.staff_id = staff.staff_id
     expense.category_id = @category.category_id
     expense.amount = 100
@@ -74,6 +79,8 @@ class LiveConnectionTest < Test::Unit::TestCase
   def test_payment
     size_of_payment_list = FreshBooks::Payment.list("per_page" => 100).size
     payment = FreshBooks::Payment.new
+    assert !payment.create
+    assert !payment.error.empty?
     payment.client_id = @client.client_id
     
     invoice = FreshBooks::Invoice.new
