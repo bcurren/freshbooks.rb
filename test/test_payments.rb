@@ -5,7 +5,7 @@ class TestPayments < Test::Unit::TestCase
     mock_api_response("payment_list_response")
     
     payments = FreshBooks::Payment.list
-    assert_equal 221, payments.size
+    assert_equal 1, payments.size
     assert_payment payments[0], 0
   end
   

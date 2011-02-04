@@ -5,7 +5,7 @@ class TestExpense < Test::Unit::TestCase
     mock_api_response("expense_list_response")
     
     expenses = FreshBooks::Expense.list
-    assert_equal 47, expenses.size
+    assert_equal 2, expenses.size
     assert_expense expenses[0], 0
     assert_expense expenses[1], 1
   end

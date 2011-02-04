@@ -121,21 +121,30 @@ module FreshBooks
     
     def self.api_list_action(action_name, options = {})
       # Create the proc for the list proxy to retrieve the next page
-      list_page_proc = proc do |page|
-        options["page"] = page
+      # if options['page']
         response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
-        
         raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
-        
         root = response.elements[1]
         array = root.elements.map { |item| self.new_from_xml(item) }
-        
-        current_page = Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'], array.size)
-        
-        [array, current_page]
-      end
+        page  = FreshBooks::Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'], array)
+        return page
+      # end
       
-      ListProxy.new(list_page_proc)
+      # list_page_proc = proc do |page|
+      #   options["page"] = page
+      #   response = FreshBooks::Base.connection.call_api("#{api_class_name}.#{action_name}", options)
+      #   
+      #   raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
+      #   
+      #   root = response.elements[1]
+      #   array = root.elements.map { |item| self.new_from_xml(item) }
+      #   
+      #   current_page = Page.new(root.attributes['page'], root.attributes['per_page'], root.attributes['total'], array.size)
+      #   
+      #   [array, current_page]
+      # end
+      # 
+      # ListProxy.new(list_page_proc)
     end
     
     def self.api_get_action(action_name, object_id)

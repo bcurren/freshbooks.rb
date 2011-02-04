@@ -117,4 +117,14 @@ class LiveConnectionTest < Test::Unit::TestCase
     assert FreshBooks::Category.get(@category.category_id).delete
     assert FreshBooks::Category.list("per_page" => 100).size == size_of_category_list - 1
   end
+  
+  def test_paging
+    assert_equal 0, FreshBooks::Invoice.list("per_page" => 25).size
+    invoice = FreshBooks::Invoice.new
+    invoice.client_id = @client.client_id
+    30.times { invoice.create }
+    assert_equal 25, FreshBooks::Invoice.list("page" => 1, "per_page" => 25).size
+    assert_equal 5, FreshBooks::Invoice.list("page" => 2, "per_page" => 25).size
+  end
+  
 end

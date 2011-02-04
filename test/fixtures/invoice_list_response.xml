@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <response status="ok">
-  <invoices page="1" per_page="2" pages="2" total="3">
+  <invoices page="1" per_page="2" pages="2" total="2">
     <invoice>
       <invoice_id>1</invoice_id>
       <number>number1</number>
