@@ -98,12 +98,12 @@ class TestBase < Test::Unit::TestCase
   
   def test_can_handle_all_zero_updated_at
     xml = <<-END_XML
-      <my_client> 
-        <client_id>3</client_id> 
-        <first_name>Test</first_name> 
-        <last_name>User</last_name> 
-        <organization>User Testing</organization> 
-        <updated>0000-00-00 00:00:00</updated> 
+      <my_client>
+        <client_id>3</client_id>
+        <first_name>Test</first_name>
+        <last_name>User</last_name>
+        <organization>User Testing</organization>
+        <updated>0000-00-00 00:00:00</updated>
       </my_client>
     END_XML
     doc = REXML::Document.new(xml)
@@ -112,6 +112,10 @@ class TestBase < Test::Unit::TestCase
     assert_equal nil, item.updated
   end
   
+  def test_actions
+    assert FreshBooks::MyItem.respond_to?(:get)
+    assert !Class.new.respond_to?(:get)
+  end
 end
 
 module FreshBooks
@@ -127,6 +131,7 @@ module FreshBooks
       s.object :my_address
       s.array :my_lines
     end
+    actions :get
   end
 
   class MyClient < FreshBooks::Base

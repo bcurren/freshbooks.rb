@@ -88,10 +88,15 @@ module FreshBooks
       end
     end
     
-    def self.define_class_method(symbol, &block)
-      self.class.send(:define_method, symbol, &block)
+    def self.metaclass
+      class << self; self; end
     end
     
+    def self.define_class_method(symbol, &block)
+      metaclass.instance_eval do
+        define_method symbol, &block
+      end
+    end
     
     def self.actions(*operations)
       operations.each do |operation|
@@ -152,7 +157,7 @@ module FreshBooks
     
     def api_action(action_name)
       response = FreshBooks::Base.connection.call_api(
-        "#{self.class.api_class_name}.#{action_name}", 
+        "#{self.class.api_class_name}.#{action_name}",
         "#{self.class.api_class_name}_id" => primary_key_value)
       response.success?
     end

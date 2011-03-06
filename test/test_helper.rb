@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/../lib/freshbooks'
 require 'stringio'
 require 'test/unit'
 require File.dirname(__FILE__) + '/mock_connection'
+require 'active_support/all'
 
 begin
   require 'mocha'
