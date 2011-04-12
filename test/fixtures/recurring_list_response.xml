@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<response xmlns="http://www.freshbooks.com/api/" status="ok">
+  <recurrings page="1" per_page="1" pages="1" total="1">
+    <recurring>
+      <recurring_id>1</recurring_id>
+
+      <frequency>m</frequency>
+      <occurrences>1</occurrences>
+      <stopped>0</stopped>
+
+      <client_id>1</client_id>
+      <amount>100.0</amount>
+      <date>2011-04-01</date>
+
+      <po_number>1</po_number>
+      <discount>1.0</discount>
+      <notes>notes1</notes>
+      <terms>terms1</terms>
+
+      <first_name>first_name1</first_name>
+      <last_name>last_name1</last_name>
+      <organization>organization1</organization>
+      <p_street1>p_street11</p_street1>
+      <p_street2>p_street21</p_street2>
+      <p_city>p_city1</p_city>
+      <p_state>p_state1</p_state>
+      <p_country>p_country1</p_country>
+      <p_code>p_code1</p_code>
+
+      <return_uri>return_uri1</return_uri>
+      <send_email>1</send_email>
+      <send_snail_mail>0</send_snail_mail>
+
+      <lines>
+        <line>
+          <amount>1.0</amount>
+          <name>name1</name>
+          <description>description1</description>
+          <tax1_name>tax1_name1</tax1_name>
+          <tax2_name>tax2_name1</tax2_name>
+          <unit_cost>1.0</unit_cost>
+          <tax1_percent>1.0</tax1_percent>
+          <tax2_percent>1.0</tax2_percent>
+          <quantity>1</quantity>
+        </line>
+      </lines>
+    </recurring>
+  </recurrings>
+</response>
