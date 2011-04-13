@@ -83,10 +83,16 @@ private
     assert_equal true, recurring.send_email
     assert_equal false, recurring.send_snail_mail
 
+    assert_autobill recurring.autobill, number
+
     lines = recurring.lines
     assert_equal 1, lines.size
     lines.each_with_index do |line, index|
       assert_line(line, index)
     end
+  end
+
+  def assert_autobill(autobill, number)
+    assert "gateway_name#{number}", autobill.gateway_name
   end
 end

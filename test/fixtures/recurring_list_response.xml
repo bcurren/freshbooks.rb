@@ -31,6 +31,18 @@
       <send_email>1</send_email>
       <send_snail_mail>0</send_snail_mail>
 
+      <autobill>
+        <gateway_name>gateway1</gateway_name>
+        <card>
+          <number>1</number>
+          <name>name1</name>
+          <expiration>
+            <month>01</month>
+            <year>2001</year>
+          </expiration>
+        </card>
+      </autobill>
+
       <lines>
         <line>
           <amount>1.0</amount>
