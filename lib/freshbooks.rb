@@ -11,11 +11,14 @@ end
 require 'active_support/all'
 
 require 'freshbooks/base'
+require 'freshbooks/autobill'
+require 'freshbooks/card'
 require 'freshbooks/category'
 require 'freshbooks/client'
 require 'freshbooks/connection'
 require 'freshbooks/estimate'
 require 'freshbooks/expense'
+require 'freshbooks/expiration'
 require 'freshbooks/invoice'
 require 'freshbooks/item'
 require 'freshbooks/line'
@@ -73,7 +76,7 @@ module FreshBooks
   class ApiAccessNotEnabledError < Error; end;
   class InvalidAccountUrlError < Error; end;
   class AccountDeactivatedError < Error; end;
-  
+
   class ParseError < StandardError
     attr_accessor :original_error, :xml
 
