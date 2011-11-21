@@ -1,3 +1,11 @@
+== 2011-11-20
+  * Updated API to include currency code & language (In most API calls) [anlek]
+  * Updated time_entry to include "billed" attribute [anlek]
+  * Added new API calls: Gateway, Language, System, Tax [anlek]
+  * Added Staff.current [anlek]
+  * Added gateway_transaction to payment [anlek]
+  * Ensured that deprecated items are no longer included in the results (This MIGHT break some existing code) [anlek]
+
 == 0.0.1 2009-02-25
 
 * 3.0 major enhancement:
