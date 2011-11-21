@@ -5,7 +5,8 @@ module FreshBooks
       s.float :amount
       s.date :date
       s.date_time :updated, :read_only => true
-      s.string :type, :notes
+      s.string :type, :notes, :currency_code
+      s.object :gateway_transaction
     end
     
     actions :list, :get, :create, :update, :delete
