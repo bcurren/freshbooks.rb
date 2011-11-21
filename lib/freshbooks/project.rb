@@ -5,6 +5,7 @@ module FreshBooks
       s.fixnum :project_id, :client_id
       s.float :rate, :hour_budget
       s.array :tasks
+      s.array :staff
       s.object :budget
     end
     
