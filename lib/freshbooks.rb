@@ -12,6 +12,7 @@ require 'active_support/all'
 
 require 'freshbooks/base'
 require 'freshbooks/autobill'
+require 'freshbooks/budget'
 require 'freshbooks/card'
 require 'freshbooks/category'
 require 'freshbooks/client'

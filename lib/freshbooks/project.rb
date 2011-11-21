@@ -3,8 +3,9 @@ module FreshBooks
     define_schema do |s|
       s.string :name, :bill_method, :description
       s.fixnum :project_id, :client_id
-      s.float :rate
+      s.float :rate, :hour_budget
       s.array :tasks
+      s.object :budget
     end
     
     actions :list, :get, :create, :update, :delete
