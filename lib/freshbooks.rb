@@ -11,6 +11,8 @@ end
 require 'active_support/all'
 
 require 'freshbooks/base'
+require 'freshbooks/address'
+require 'freshbooks/api'
 require 'freshbooks/autobill'
 require 'freshbooks/budget'
 require 'freshbooks/card'
@@ -35,6 +37,7 @@ require 'freshbooks/project'
 require 'freshbooks/recurring'
 require 'freshbooks/response'
 require 'freshbooks/staff'
+require 'freshbooks/system'
 require 'freshbooks/task'
 require 'freshbooks/time_entry'
 
