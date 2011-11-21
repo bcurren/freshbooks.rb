@@ -39,6 +39,7 @@ require 'freshbooks/response'
 require 'freshbooks/staff'
 require 'freshbooks/system'
 require 'freshbooks/task'
+require 'freshbooks/tax'
 require 'freshbooks/time_entry'
 
 require 'net/https'
