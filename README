@@ -23,26 +23,26 @@ NOTE: These examples are out of date and need to be updated. I will be writing d
 
 Initialization:
 
-  FreshBooks::Base.establish_connection('sample.freshbooks.com', 'mytoken')
+    FreshBooks::Base.establish_connection('sample.freshbooks.com', 'mytoken')
 
 Updating a client name:
 
-  clients = FreshBooks::Client.list
-  client = clients[0]
-  client.first_name = 'Suzy'
-  client.update
+    clients = FreshBooks::Client.list
+    client = clients[0]
+    client.first_name = 'Suzy'
+    client.update
 
 Updating an invoice:
 
-  invoice = FreshBooks::Invoice.get(4)
-  invoice.lines[0].quantity += 1
-  invoice.update
+    invoice = FreshBooks::Invoice.get(4)
+    invoice.lines[0].quantity += 1
+    invoice.update
 
 Creating a new item
 
-  item = FreshBooks::Item.new
-  item.name = 'A sample item'
-  item.create
+    item = FreshBooks::Item.new
+    item.name = 'A sample item'
+    item.create
 
 = License
 
