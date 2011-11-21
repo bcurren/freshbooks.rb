@@ -86,8 +86,8 @@ module FreshBooks
       
       def self.to_value(xml_val)
         xml_val.elements.map { |elem|
-          FreshBooks::const_get(elem.name.camelize)::new_from_xml(elem)
-        }
+          FreshBooks::const_get(elem.name.camelize)::new_from_xml(elem) unless XmlSerializer.deprecated? elem
+        }.compact
       end
     end
     
