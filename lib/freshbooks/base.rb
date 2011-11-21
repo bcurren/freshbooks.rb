@@ -24,6 +24,7 @@ module FreshBooks
       self.schema_definition.members.each do |member_name, member_options|
         node = xml_root.elements[member_name.dup]
         next if node.nil?
+        next if XmlSerializer.deprecated? node
         
         value = FreshBooks::XmlSerializer.to_value(node, member_options[:type])
         object.send("#{member_name}=", value)
