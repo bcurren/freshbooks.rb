@@ -5,6 +5,7 @@ module FreshBooks
       s.float :hours
       s.date :date
       s.string :notes
+      s.boolean :billed
     end
     
     actions :list, :get, :create, :update, :delete

@@ -3,6 +3,7 @@ module FreshBooks
     define_schema do |s|
       s.string :first_name, :last_name, :organization, :p_street1, :p_street2, :p_city
       s.string :p_state, :p_country, :p_code, :lines, :notes, :terms, :frequency
+      s.string :currency_code, :language
       s.date :date
       s.fixnum :recurring_id, :client_id, :po_number, :occurrences
       s.float :discount, :amount

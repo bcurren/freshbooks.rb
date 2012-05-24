@@ -13,5 +13,10 @@ module FreshBooks
     def self.create_serializer(type)
       "FreshBooks::XmlSerializer::#{type.to_s.classify}Serializer".constantize
     end
+    
+    def self.deprecated?(node)
+      !node.attribute('deprecated').nil?
+    end
+    
   end
 end

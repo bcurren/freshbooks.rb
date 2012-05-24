@@ -4,6 +4,7 @@ require 'freshbooks/xml_serializer'
 module FreshBooks
   class Base
     include FreshBooks::Schema::Mixin
+    attr_reader :error_msg
     
     def initialize(args = {})
       args.each_pair {|k, v| send("#{k}=", v)}
@@ -24,6 +25,7 @@ module FreshBooks
       self.schema_definition.members.each do |member_name, member_options|
         node = xml_root.elements[member_name.dup]
         next if node.nil?
+        next if XmlSerializer.deprecated? node
         
         value = FreshBooks::XmlSerializer.to_value(node, member_options[:type])
         object.send("#{member_name}=", value)
@@ -166,15 +168,27 @@ module FreshBooks
       response = FreshBooks::Base.connection.call_api(
         "#{self.class.api_class_name}.#{action_name}",
         self.class.api_class_name => self)
-      self.primary_key_value = response.elements[1].text.to_i if response.success?
-      response.success?
+      if response.success?
+        self.primary_key_value = response.elements[1].text.to_i
+        @error_msg = nil
+        true
+      else
+        @error_msg = response.error_msg
+        false
+      end
     end
     
     def api_update_action(action_name)
       response = FreshBooks::Base.connection.call_api(
         "#{self.class.api_class_name}.#{action_name}",
         self.class.api_class_name => self)
-      response.success?
+      if response.success?
+        @error_msg = nil
+        true
+      else
+        @error_msg = response.error_msg
+        false
+      end
     end
     
   end
