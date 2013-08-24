@@ -4,7 +4,7 @@ module FreshBooks
       s.string :name, :bill_method, :description
       s.fixnum :project_id, :client_id
       s.float :rate
-      s.array :tasks
+      s.array :tasks, :staff
     end
     
     actions :list, :get, :create, :update, :delete
