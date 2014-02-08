@@ -17,6 +17,7 @@ lib/freshbooks/links.rb
 lib/freshbooks/list_proxy.rb
 lib/freshbooks/payment.rb
 lib/freshbooks/project.rb
+lib/freshbooks/contact.rb
 lib/freshbooks/recurring.rb
 lib/freshbooks/response.rb
 lib/freshbooks/schema/definition.rb
