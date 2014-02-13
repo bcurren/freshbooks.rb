@@ -10,6 +10,7 @@ module FreshBooks
       s.date_time :updated, :read_only => true
       s.fixnum :client_id
       s.object :links, :read_only => true
+      s.array :contacts
     end
     
     actions :list, :get, :create, :update, :delete
