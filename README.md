@@ -53,7 +53,7 @@ This work is distributed under the MIT License. Use/modify the code however you 
 
 ## Download
 
-`sudo gem install bcurren-freshbooks.rb`
+`sudo gem install freshbooks.rb`
 
 ## Credits
 
