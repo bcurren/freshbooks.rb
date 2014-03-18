@@ -13,6 +13,7 @@ module FreshBooks
       s.fixnum :client_id
       s.object :links, :read_only => true
       s.array :contacts
+      s.string :vat_name, :vat_number
     end
     
     actions :list, :get, :create, :update, :delete
