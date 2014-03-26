@@ -10,6 +10,7 @@ lib/freshbooks/api.rb
 lib/freshbooks/autobill.rb
 lib/freshbooks/base.rb
 lib/freshbooks/budget.rb
+lib/freshbooks/callback.rb
 lib/freshbooks/card.rb
 lib/freshbooks/category.rb
 lib/freshbooks/client.rb
