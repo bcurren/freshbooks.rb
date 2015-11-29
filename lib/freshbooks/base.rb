@@ -154,6 +154,9 @@ module FreshBooks
       response = FreshBooks::Base.connection.call_api(
         "#{api_class_name}.#{action_name}",
         "#{api_class_name}_id" => object_id)
+
+      raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
+      
       response.success? ? self.new_from_xml(response.elements[1]) : nil
     end
     
@@ -168,6 +171,9 @@ module FreshBooks
       response = FreshBooks::Base.connection.call_api(
         "#{self.class.api_class_name}.#{action_name}",
         self.class.api_class_name => self)
+
+      raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
+
       if response.success?
         self.primary_key_value = response.elements[1].text.to_i
         @error_msg = nil
@@ -182,6 +188,9 @@ module FreshBooks
       response = FreshBooks::Base.connection.call_api(
         "#{self.class.api_class_name}.#{action_name}",
         self.class.api_class_name => self)
+
+      raise FreshBooks::InternalError.new(response.error_msg) unless response.success?
+      
       if response.success?
         @error_msg = nil
         true
