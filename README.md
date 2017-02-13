@@ -59,3 +59,5 @@ This work is distributed under the MIT License. Use/modify the code however you 
 
 FreshBooks.rb is written and maintained by [Ben Curren](https://github.com/bcurren) at [Outright.com](http://outright.com/). [Ben Vinegar](http://benv.ca/) was the original developer and we have taken over maintenance of the gem from now on.
 
+Test the Freshbook's API on [RapidAPI](https://rapidapi.com/package/FreshbooksAPI/functions?utm_source=FreshbooksGitHub&utm_medium=button)
+
